@@ -328,7 +328,7 @@ void CustomFeatureHLSL::addVariable(String name, String type, String defaultValu
 	}
 }
 
-void CustomFeatureHLSL::addConnector(String name, String elementName, String type)
+void CustomFeatureHLSL::addConnector(String name, String type, String elementName)
 {
 	// grab connector texcoord register
 	ShaderConnector *connectComp = dynamic_cast<ShaderConnector *>(mComponentList[C_CONNECTOR]);
@@ -365,15 +365,24 @@ void CustomFeatureHLSL::addConnector(String name, String elementName, String typ
 		return;
 	}
 
-	Var *connector = connectComp->getElement((RegisterType)element);
-	connector->setName(name);
+	VarHolder newVarHolder(name, type, "");
+
+	newVarHolder.elementId = element;
 
 	if (mOutputState == VertexOutput)
-		connector->setStructName("OUT");
-	else if(mOutputState == PixelOutput)
-		connector->setStructName("IN");
+		newVarHolder.structName= "OUT";
+	else if (mOutputState == PixelOutput)
+		newVarHolder.structName = "IN";
 
-	connector->setType(type);
+	mVars.push_back(newVarHolder);
+}
+
+void CustomFeatureHLSL::addVertTexCoord(String name)
+{
+	VarHolder newVarHolder(name, "", "");
+	newVarHolder.texCoord = true;
+
+	mVars.push_back(newVarHolder);
 }
 
 void CustomFeatureHLSL::writeLine(String format, S32 argc, ConsoleValueRef *argv)
@@ -393,25 +402,45 @@ void CustomFeatureHLSL::writeLine(String format, S32 argc, ConsoleValueRef *argv
 			{
 				if (mVars[v].varName == varName)
 				{
-					Var* newDeclVar = new Var(mVars[v].varName, mVars[v].type);
-
-					newDeclVar->arraySize = mVars[v].arraySize;
-					newDeclVar->uniform = mVars[v].uniform;
-					newDeclVar->sampler = mVars[v].sampler;
-					newDeclVar->texture = mVars[v].texture;
-					newDeclVar->constNum = mVars[v].constNum;
-					newDeclVar->constSortPos = mVars[v].constSortPos;
-
-					if (!newDeclVar->uniform)
+					if (!mVars[v].texCoord)
 					{
-						LangElement *newVarDecl = new DecOp(newDeclVar);
-						newVar = (Var*)newVarDecl;
+						if (mVars[v].elementId != -1)
+						{
+							ShaderConnector *connectComp = dynamic_cast<ShaderConnector *>(mComponentList[C_CONNECTOR]);
+							Var *newDeclVar = connectComp->getElement((RegisterType)mVars[v].elementId);
+							newDeclVar->setName(mVars[v].varName);
+							newDeclVar->setStructName(mVars[v].structName);
+							newDeclVar->setType(mVars[v].type);
 
-						declarationStatement = true;
+							newVar = newDeclVar;
+						}
+						else
+						{
+							Var* newDeclVar = new Var(mVars[v].varName, mVars[v].type);
+
+							newDeclVar->arraySize = mVars[v].arraySize;
+							newDeclVar->uniform = mVars[v].uniform;
+							newDeclVar->sampler = mVars[v].sampler;
+							newDeclVar->texture = mVars[v].texture;
+							newDeclVar->constNum = mVars[v].constNum;
+							newDeclVar->constSortPos = mVars[v].constSortPos;
+
+							if (!newDeclVar->uniform)
+							{
+								LangElement *newVarDecl = new DecOp(newDeclVar);
+								newVar = (Var*)newVarDecl;
+
+								declarationStatement = true;
+							}
+							else
+							{
+								newVar = newDeclVar;
+							}
+						}
 					}
 					else
 					{
-						newVar = newDeclVar;
+						newVar = getVertTexCoord(mVars[v].varName);
 					}
 
 					mVars.erase(v);

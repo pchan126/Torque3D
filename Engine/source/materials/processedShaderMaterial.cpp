@@ -1304,6 +1304,8 @@ void ProcessedShaderMaterial::setCustomShaderData(Vector<CustomShaderBindingData
 {
 	PROFILE_SCOPE(ProcessedShaderMaterial_setCustomShaderData);
 
+	Material* ownerMat = this->getMaterial();
+
 	GFXShaderConstBuffer* shaderConsts = _getShaderConstBuffer(pass);
 	ShaderConstHandles* handles = _getShaderConstHandles(pass);
 

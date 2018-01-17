@@ -30,30 +30,36 @@ class CustomFeatureHLSL : public ShaderFeatureHLSL
 	struct VarHolder
 	{
 		String varName;
-		String defaultValue;
 		String type;
+		String defaultValue;
+		S32 elementId;
 		bool uniform;
 		bool sampler;
 		bool texture;
+		bool texCoord;
 		U32 constNum;
-		ConstantSortPosition constSortPos;
 		U32 arraySize;
+		String structName;
+		ConstantSortPosition constSortPos;
 
 		VarHolder() :
 			varName(""),
 			type(""),
 			defaultValue(""),
+			elementId(-1),
 			uniform(false), 
 			sampler(false), 
 			texture(false),
+			texCoord(false),
 			constNum(0), 
 			arraySize(0),
+			structName(""),
 			constSortPos(cspUninit)
 		{
 		}
 
 		VarHolder(String _varName,String _type, String _defaultValue) :
-			uniform(false), sampler(false), texture(false), constNum(0), arraySize(0), constSortPos(cspUninit)
+			elementId(-1), uniform(false), sampler(false), texture(false), texCoord(false), constNum(0), arraySize(0), structName(""), constSortPos(cspUninit)
 		{
 			varName = _varName;
 			type = _type;
@@ -62,6 +68,8 @@ class CustomFeatureHLSL : public ShaderFeatureHLSL
 	};
 
 	Vector<VarHolder> mVars;
+
+	Vector<VarHolder> mConnectorVars;
 
 	enum outputState
 	{
@@ -118,6 +126,7 @@ public:
 	void addVariable(String name, String type, String defaultValue);
 	void addSampler(String name, String type, U32 arraySize = 0);
 	void addTexture(String name, String type, String samplerState, U32 arraySize);
-	void addConnector(String name, String elementName, String type);
+	void addConnector(String name, String type, String elementName);
+	void addVertTexCoord(String name);
 	void writeLine(String format, S32 argc, ConsoleValueRef *argv);
 };

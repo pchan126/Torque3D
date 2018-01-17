@@ -104,9 +104,14 @@ void CustomShaderFeatureData::addTexture(String name, String type, String sample
 	mFeatureHLSL->addTexture(name, type, samplerState, arraySize);
 }
 
-void CustomShaderFeatureData::addConnector(String name, String elementName, String type)
+void CustomShaderFeatureData::addConnector(String name, String type, String elementName)
 {
-	mFeatureHLSL->addConnector(name, elementName, type);
+	mFeatureHLSL->addConnector(name, type, elementName);
+}
+
+void CustomShaderFeatureData::addVertTexCoord(String name)
+{
+	mFeatureHLSL->addVertTexCoord(name);
 }
 
 bool CustomShaderFeatureData::hasFeature(String name)
@@ -174,6 +179,16 @@ DefineEngineMethod(CustomShaderFeatureData, addSampler, void, (String name, U32 
 DefineEngineMethod(CustomShaderFeatureData, addTexture, void, (String name, String type, String samplerState, U32 arraySize), ("", "", 0), "")
 {
 	object->addTexture(name, type, samplerState, arraySize);
+}
+
+DefineEngineMethod(CustomShaderFeatureData, addConnector, void, (String name, String type, String elementName), ("", "", ""), "")
+{
+	object->addConnector(name, type, elementName);
+}
+
+DefineEngineMethod(CustomShaderFeatureData, addVertTexCoord, void, (String name), (""), "")
+{
+	object->addVertTexCoord(name);
 }
 
 ConsoleMethod(CustomShaderFeatureData, writeLine, void, 3, 0, "( string format, string args... ) Dynamically call a method on an object.\n"

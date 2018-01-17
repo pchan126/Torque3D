@@ -64,8 +64,8 @@ public:
 	void addUniform(String name, String type, String defaultValue, U32 arraySize);
 	void addSampler(String name, String type, U32 arraySize);
 	void addTexture(String name, String type, String samplerState, U32 arraySize);
-	void addConnector(String name, String elementName, String type);
-
+	void addConnector(String name, String type, String elementName);
+	void addVertTexCoord(String name);
 	bool hasFeature(String name);
 
 	void writeLine(String format, S32 argc, ConsoleValueRef *argv);

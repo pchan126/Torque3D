@@ -230,28 +230,32 @@ void TSShapeInstance::initMeshObjects()
    }
 }
 
-void TSShapeInstance::setMaterialList( TSMaterialList *matList )
+void TSShapeInstance::setMaterialList(TSMaterialList *matList)
 {
-   // get rid of old list
-   if ( mOwnMaterialList )
-      delete mMaterialList;
+	// get rid of old list
+	if (mOwnMaterialList)
+		delete mMaterialList;
 
-   mMaterialList = matList;
-   mOwnMaterialList = false;
+	if (matList != nullptr)
+		mMaterialList = new TSMaterialList(matList);
+	else
+		mMaterialList = nullptr;
 
-   // If the material list is already be mapped then
-   // don't bother doing the initializing a second time.
-   // Note: only check the last material instance as this will catch both
-   // uninitialised lists, as well as initialised lists that have had new
-   // materials appended
-   if ( mMaterialList && !mMaterialList->getMaterialInst( mMaterialList->size()-1 ) )
-   {
-      mMaterialList->setTextureLookupPath( mShapeResource.getPath().getPath() );
-      mMaterialList->mapMaterials();
-      Material::sAllowTextureTargetAssignment = true;
-      initMaterialList();
-      Material::sAllowTextureTargetAssignment = false;
-   }
+	mOwnMaterialList = true;
+
+	// If the material list is already be mapped then
+	// don't bother doing the initializing a second time.
+	// Note: only check the last material instance as this will catch both
+	// uninitialised lists, as well as initialised lists that have had new
+	// materials appended
+	if (mMaterialList/* && !mMaterialList->getMaterialInst(mMaterialList->size() - 1)*/)
+	{
+		mMaterialList->setTextureLookupPath(mShapeResource.getPath().getPath());
+		mMaterialList->mapMaterials();
+		Material::sAllowTextureTargetAssignment = true;
+		initMaterialList();
+		Material::sAllowTextureTargetAssignment = false;
+	}
 }
 
 void TSShapeInstance::cloneMaterialList( const FeatureSet *features )
