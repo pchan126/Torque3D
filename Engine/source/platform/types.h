@@ -23,24 +23,23 @@
 #ifndef _TORQUE_TYPES_H_
 #define _TORQUE_TYPES_H_
 
-#if (defined _MSC_VER) && (_MSC_VER <= 1500)
-#include "platformWin32/stdint.h"
-#else
-#include <stdint.h>
-#endif
+#include <cstdint>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------Basic Types--------------------------------------------------//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef signed char        S8;      ///< Compiler independent Signed Char
-typedef unsigned char      U8;      ///< Compiler independent Unsigned Char
+typedef int8_t				S8;      ///< Compiler independent Signed Char
+typedef uint8_t				U8;      ///< Compiler independent Unsigned Char
 
-typedef signed short       S16;     ///< Compiler independent Signed 16-bit short
-typedef unsigned short     U16;     ///< Compiler independent Unsigned 16-bit short
+typedef int16_t				S16;     ///< Compiler independent Signed 16-bit short
+typedef uint16_t			U16;     ///< Compiler independent Unsigned 16-bit short
 
-typedef signed int         S32;     ///< Compiler independent Signed 32-bit integer
-typedef unsigned int       U32;     ///< Compiler independent Unsigned 32-bit integer
+typedef int32_t				S32;     ///< Compiler independent Signed 32-bit integer
+typedef uint32_t			U32;     ///< Compiler independent Unsigned 32-bit integer
+
+typedef int64_t				S64;     ///< Compiler independent Signed 64-bit integer
+typedef uint64_t			U64;     ///< Compiler independent Unsigned 64-bit integer
 
 typedef float              F32;     ///< Compiler independent 32-bit float
 typedef double             F64;     ///< Compiler independent 64-bit float
@@ -88,17 +87,21 @@ static const F32 Float_Inverse2Pi = F32(0.5 / 3.14159265358979323846);///< Const
 static const F32 Float_Sqrt2 = F32(1.41421356237309504880f);          ///< Constant float sqrt(2)
 static const F32 Float_SqrtHalf = F32(0.7071067811865475244008443f);  ///< Constant float sqrt(0.5)
 
-static const S8  S8_MIN  = S8(-128);                              ///< Constant Min Limit S8
-static const S8  S8_MAX  = S8(127);                               ///< Constant Max Limit S8
-static const U8  U8_MAX  = U8(255);                               ///< Constant Max Limit U8
+static const S8  S8_MIN  = INT8_MIN;								///< Constant Min Limit S8
+static const S8  S8_MAX  = INT8_MAX;								///< Constant Max Limit S8
+static const U8  U8_MAX  = UINT8_MAX;								///< Constant Max Limit U8
 
-static const S16 S16_MIN = S16(-32768);                           ///< Constant Min Limit S16
-static const S16 S16_MAX = S16(32767);                            ///< Constant Max Limit S16
-static const U16 U16_MAX = U16(65535);                            ///< Constant Max Limit U16
+static const S16 S16_MIN = INT16_MIN;								///< Constant Min Limit S16
+static const S16 S16_MAX = INT16_MAX;								///< Constant Max Limit S16
+static const U16 U16_MAX = UINT16_MAX;								///< Constant Max Limit U16
 
-static const S32 S32_MIN = S32(-2147483647 - 1);                  ///< Constant Min Limit S32
-static const S32 S32_MAX = S32(2147483647);                       ///< Constant Max Limit S32
-static const U32 U32_MAX = U32(0xffffffff);                       ///< Constant Max Limit U32
+static const S32 S32_MIN = INT32_MIN;								///< Constant Min Limit S32
+static const S32 S32_MAX = INT32_MAX;								///< Constant Max Limit S32
+static const U32 U32_MAX = UINT32_MAX;								///< Constant Max Limit U32
+
+static const S64 S64_MIN = INT64_MIN;								///< Constant Min Limit S64
+static const S64 S64_MAX = INT64_MAX;								///< Constant Max Limit S64
+static const U64 U64_MAX = UINT64_MAX;								///< Constant Max Limit U64
 
 static const F32 F32_MIN = F32(1.175494351e-38F);                 ///< Constant Min Limit F32
 static const F32 F32_MAX = F32(3.402823466e+38F);                 ///< Constant Max Limit F32
