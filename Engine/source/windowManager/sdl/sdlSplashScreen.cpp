@@ -27,6 +27,8 @@
 #include "windowManager/sdl/sdlWindow.h"
 
 static SDL_Window* gSplashWindow = nullptr;
+
+#ifdef TORQUE_SDL
 static SDL_Surface* gSplashImage = nullptr;
 static SDL_Texture* gSplashTexture = nullptr;
 static SDL_Renderer* gSplashRenderer = nullptr;
@@ -126,3 +128,5 @@ bool Platform::closeSplashWindow()
 
    return true;
 }
+
+#endif

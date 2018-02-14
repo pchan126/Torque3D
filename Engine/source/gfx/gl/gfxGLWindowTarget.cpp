@@ -27,13 +27,13 @@
 #include "gfx/gl/gfxGLUtils.h"
 #include "postFx/postEffect.h"
 
-GFX_ImplementTextureProfile( BackBufferDepthProfile,
-                             GFXTextureProfile::DiffuseMap,
-                             GFXTextureProfile::PreserveSize |
-                             GFXTextureProfile::NoMipmap |
-                             GFXTextureProfile::ZTarget |
-                             GFXTextureProfile::Pooled,
-                             GFXTextureProfile::NONE );
+GFX_ImplementTextureProfile(BackBufferDepthProfile,
+	GFXTextureProfile::DiffuseMap,
+	GFXTextureProfile::PreserveSize |
+	GFXTextureProfile::NoMipmap |
+	GFXTextureProfile::ZTarget |
+	GFXTextureProfile::Pooled,
+	GFXTextureProfile::NONE);
 
 GFXGLWindowTarget::GFXGLWindowTarget(PlatformWindow *win, GFXDevice *d)
       : GFXWindowTarget(win), mDevice(d), mContext(NULL), mFullscreenContext(NULL)

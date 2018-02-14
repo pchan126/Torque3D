@@ -30,6 +30,7 @@
    #include "console/engineObject.h"
 #endif
 
+#include <vector>
 
 /// Interface for tracking GFX adapters and initializing them into devices.
 /// @note Implement this class per platform.

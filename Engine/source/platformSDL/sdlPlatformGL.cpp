@@ -8,6 +8,8 @@
 
 #include "gfx/gl/gfxGLUtils.h"
 
+#if defined(TORQUE_SDL) 
+
 namespace PlatformGL
 {
 
@@ -88,3 +90,4 @@ namespace PlatformGL
    }
 
 }
+#endif

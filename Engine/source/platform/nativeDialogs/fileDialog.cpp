@@ -33,7 +33,7 @@
 #include "core/strings/stringUnit.h"
 #include "core/frameAllocator.h"
 
-#if defined(TORQUE_SDL)
+#if defined(TORQUE_SDL) || defined(TORQUE_GLFW)
 //-----------------------------------------------------------------------------
 // PlatformFileDlgData Implementation
 //-----------------------------------------------------------------------------

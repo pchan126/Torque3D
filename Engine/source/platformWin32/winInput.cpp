@@ -20,7 +20,7 @@
 // IN THE SOFTWARE.
 //-----------------------------------------------------------------------------
 
-#if !defined( TORQUE_SDL )
+#if !defined( TORQUE_SDL ) && !defined( TORQUE_GLFW ) 
 #include "platformWin32/platformWin32.h"
 
 #include "platform/platformInput.h"

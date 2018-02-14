@@ -53,8 +53,12 @@ SFXXAudioDevice::SFXXAudioDevice(   SFXProvider* provider,
                                                 XAUDIO2_DEFAULT_CHANNELS,
                                                 XAUDIO2_DEFAULT_SAMPLERATE, 
                                                 0, 
-                                                deviceIndex, 
-                                                NULL );
+//#ifdef XAUDIO2_DEVICE_ROLE
+												//deviceIndex,
+//#else
+											    (LPCWSTR)deviceIndex,
+//#endif
+	   NULL);
    if ( FAILED( hr ) || !mMasterVoice )
    {
       Con::errorf( "SFXXAudioDevice - Failed creating master voice!" );

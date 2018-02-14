@@ -154,7 +154,7 @@ DefineConsoleFunction( shellExecute, bool, (const char * executable, const char 
    return true;
 }
 
-#ifndef TORQUE_SDL
+#if !defined ( TORQUE_SDL ) && !defined( TORQUE_GLFW )
 
 void Platform::openFolder(const char* path )
 {

@@ -121,7 +121,7 @@ void CloseSplashWindow(HINSTANCE hinst)
 	
 }
 
-#ifndef TORQUE_SDL
+#if !defined( TORQUE_SDL ) && !defined( TORQUE_GLFW )
 
 bool Platform::closeSplashWindow()
 {

@@ -49,9 +49,9 @@ protected:
    struct XADeviceInfo : SFXDeviceInfo
    {
       UINT32 deviceIndex;
-
+#ifdef XAUDIO2_DEVICE_ROLE
       XAUDIO2_DEVICE_ROLE role;
-
+#endif
       WAVEFORMATEXTENSIBLE format;
    };
 
@@ -99,6 +99,7 @@ void SFXXAudioProvider::init()
       return;
    }
 
+#ifdef XAUDIO2_DEVICE_ROLE
    // Add the devices to the info list.
    UINT32 count = 0;
    xAudio->GetDeviceCount( &count );
@@ -120,17 +121,18 @@ void SFXXAudioProvider::init()
       info->format = details.OutputFormat;
       mDeviceInfo.push_back( info );
    }
-
+#endif
    // We're done with XAudio for now.
    SAFE_RELEASE( xAudio );
 
+#ifdef XAUDIO2_DEVICE_ROLE
    // If we have no devices... we're done.
    if ( mDeviceInfo.empty() )
    {
       Con::errorf( "SFXXAudioProvider::init() - No valid XAudio2 devices found!" );
       return;
    }
-
+#endif
    // If we got this far then we should be able to
    // safely create a device for XAudio.
    regProvider( this );

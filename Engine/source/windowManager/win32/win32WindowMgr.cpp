@@ -27,7 +27,7 @@
 #include "core/util/journal/process.h"
 #include "core/strings/unicode.h"
 
-#if !defined( TORQUE_SDL )
+#if !defined( TORQUE_SDL ) && !defined( TORQUE_GLFW )
 
 // ------------------------------------------------------------------------
 

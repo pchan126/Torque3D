@@ -460,6 +460,9 @@ void PlatformWindowManagerSDL::updateSDLTextInputState(KeyboardInputState state)
    mInputState = state;
 }
 
+
+#ifdef TORQUE_SDL 
+
 void Platform::openFolder(const char* path )
 {
     AssertFatal(0, "Not Implemented");
@@ -470,6 +473,7 @@ void Platform::openFile(const char* path )
     AssertFatal(0, "Not Implemented");
 }
 
+#endif
 //------------------------------------------------------------------------------
 
 namespace GL
