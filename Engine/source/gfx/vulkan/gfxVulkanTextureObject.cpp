@@ -38,10 +38,10 @@ GFXVulkanTextureObject::GFXVulkanTextureObject(GFXDevice * aDevice, GFXTexturePr
    mVulkanDevice(static_cast<GFXVulkanDevice*>(mDevice)),
    mZombieCache(NULL),
    mFrameAllocatorMark(0),
-   mFrameAllocatorPtr(NULL)
+   mFrameAllocatorPtr(NULL),
+   imageLayout(VK_IMAGE_LAYOUT_UNDEFINED)
 {
    AssertFatal(dynamic_cast<GFXVulkanDevice*>(mDevice), "GFXVulkanTextureObject::GFXVulkanTextureObject - Invalid device type, expected GFXVulkanDevice!");
-	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 }
 
 GFXVulkanTextureObject::~GFXVulkanTextureObject() 
@@ -196,20 +196,91 @@ bool GFXVulkanTextureObject::copyToBmp(GBitmap * bmp)
    return true;
 }
 
-void GFXVulkanTextureObject::initSamplerState(const GFXSamplerStateDesc &ssd)
+bool GFXVulkanTextureObject::initSamplerState(const GFXSamplerStateDesc &ssd)
 {
-   //vulkanTexParameteri(mBinding, Vulkan_TEXTURE_MIN_FILTER, minificationFilter(ssd.minFilter, ssd.mipFilter, mMipLevels));
-   //vulkanTexParameteri(mBinding, Vulkan_TEXTURE_MAG_FILTER, GFXVulkanTextureFilter[ssd.magFilter]);
-   //vulkanTexParameteri(mBinding, Vulkan_TEXTURE_WRAP_S, !mIsNPoT2 ? GFXVulkanTextureAddress[ssd.addressModeU] : Vulkan_CLAMP_TO_EDGE);
-   //vulkanTexParameteri(mBinding, Vulkan_TEXTURE_WRAP_T, !mIsNPoT2 ? GFXVulkanTextureAddress[ssd.addressModeV] : Vulkan_CLAMP_TO_EDGE);
-   //if(mBinding == Vulkan_TEXTURE_3D)
-   //   vulkanTexParameteri(mBinding, Vulkan_TEXTURE_WRAP_R, GFXVulkanTextureAddress[ssd.addressModeW]);
-   //if(static_cast< GFXVulkanDevice* >( GFX )->supportsAnisotropic() )
-   //   vulkanTexParameterf(mBinding, Vulkan_TEXTURE_MAX_ANISOTROPY_EXT, ssd.maxAnisotropy);
+	VkSamplerCreateInfo sampler_create_info = {
+		VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO,
+		nullptr,
+		0,
+		GFXVulkanTextureFilter[ssd.minFilter],
+		GFXVulkanTextureFilter[ssd.magFilter],
+		GFXVulkanMipmapFilter[ssd.mipFilter],
+		mIsNPoT2 ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : GFXVulkanTextureAddress[ssd.addressModeU],
+		mIsNPoT2 ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : GFXVulkanTextureAddress[ssd.addressModeV],
+		mIsNPoT2 ? VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE : GFXVulkanTextureAddress[ssd.addressModeW],
+    ssd.mipLODBias, //float                   mipLodBias;
+    VK_TRUE, //VkBool32                anisotropyEnable;
+    ssd.maxAnisotropy, //float                   maxAnisotropy;
+    VK_FALSE, //VkBool32                compareEnable;
+    VK_COMPARE_OP_NEVER, //VkCompareOp             compareOp;
+    0, //float                   minLod;
+    10, //float                   maxLod;
+    VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK, //VkBorderColor           borderColor;
+    VK_TRUE //VkBool32                unnormalizedCoordinates;
+		};
 
-   //mNeedInitSamplerState = false;
-   //mSampler = ssd;
+    mNeedInitSamplerState = false;
+	if (vkCreateSampler(GFXVulkan->getLogicalDevice(), &sampler_create_info, nullptr, &sampler) != VK_SUCCESS)
+	{
+		Con::errorf("Could not create sampler");
+		return false;
+	}
+	return true;
 }
+
+void GFXVulkanTextureObject::transitionImageLayout(VkFormat format, VkImageLayout newLayout) const
+{
+    VkCommandBuffer commandBuffer = GFXVulkan->beginSingleTimeCommands();
+
+	VkImageMemoryBarrier barrier = {};
+	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+	barrier.oldLayout = imageLayout;
+	barrier.newLayout = newLayout;
+	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+	barrier.image = image;
+	barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+	barrier.subresourceRange.baseMipLevel = 0;
+	barrier.subresourceRange.levelCount = 1;
+	barrier.subresourceRange.baseArrayLayer = 0;
+	barrier.subresourceRange.layerCount = 1;
+	barrier.srcAccessMask = 0; // TODO
+	barrier.dstAccessMask = 0; // TODO
+
+		VkPipelineStageFlags srcStageFlags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		VkPipelineStageFlags destStageFlags = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+	vkCmdPipelineBarrier(
+		commandBuffer,
+		srcStageFlags, 
+		destStageFlags,
+		0, // VK_FLAGS_NONE
+		0, nullptr,
+		0, nullptr,
+		1, &barrier
+	);
+
+    GFXVulkan->endSingleTimeCommands(commandBuffer);
+}
+
+//bool GFXVulkanTextureObject::CreateSampledImage(GFXFormat gfx_format)
+//{
+//	VkFormat format = GFXVulkanTextureInternalFormat[gfx_format];
+//	VkFormatProperties format_properties;
+//	vkGetPhysicalDeviceFormatProperties(GFXVulkan->physicalDevice, format, &format_properties);
+//	if (!(format_properties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT))
+//	{
+//		Con::errorf("Provided format is not supported for a sampled image.");
+//		return false;
+//	}
+//	if ( linear_filtering && 
+//		!(format_properties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT))
+//	{
+//		Con::errorf("Provided format is not supported for a linear image filtering");
+//		return false;
+//	}
+//	return true;
+//}
 
 void GFXVulkanTextureObject::bind(U32 textureUnit)
 {
@@ -220,18 +291,18 @@ void GFXVulkanTextureObject::bind(U32 textureUnit)
    //if(GFXVulkan->mCapabilities.samplerObjects)
 	  // return;
   
-   //GFXVulkanStateBlockRef sb = mVulkanDevice->getCurrentStateBlock();
-   //AssertFatal(sb, "GFXVulkanTextureObject::bind - No active stateblock!");
-   //if (!sb)
-   //   return;
-   //      
-   //const GFXSamplerStateDesc ssd = sb->getDesc().samplers[textureUnit];
+   GFXVulkanStateBlockRef sb = mVulkanDevice->getCurrentStateBlock();
+   AssertFatal(sb, "GFXVulkanTextureObject::bind - No active stateblock!");
+   if (!sb)
+      return;
+         
+   const GFXSamplerStateDesc ssd = sb->getDesc().samplers[textureUnit];
 
-   //if(mNeedInitSamplerState)
-   //{
-   //   initSamplerState(ssd);
-   //   return;
-   //}
+   if(mNeedInitSamplerState)
+   {
+      initSamplerState(ssd);
+      return;
+   }
 
    //if(mSampler.minFilter != ssd.minFilter || mSampler.mipFilter != ssd.mipFilter)
    //   vulkanTexParameteri(mBinding, Vulkan_TEXTURE_MIN_FILTER, minificationFilter(ssd.minFilter, ssd.mipFilter, mMipLevels));

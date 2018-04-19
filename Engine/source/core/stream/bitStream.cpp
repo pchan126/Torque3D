@@ -804,11 +804,11 @@ S16 HuffmanProcessor::determineIndex(HuffWrap& rWrap)
    if (rWrap.pLeaf != NULL) {
       AssertFatal(rWrap.pNode == NULL, "Got a non-NULL pNode in a HuffWrap with a non-NULL leaf.");
 
-      return -((rWrap.pLeaf - m_huffLeaves.address()) + 1);
+      return -((rWrap.pLeaf - m_huffLeaves.data()) + 1);
    } else {
       AssertFatal(rWrap.pNode != NULL, "Got a NULL pNode in a HuffWrap with a NULL leaf.");
 
-      return rWrap.pNode - m_huffNodes.address();
+      return rWrap.pNode - m_huffNodes.data();
    }
 }
 

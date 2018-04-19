@@ -24,6 +24,7 @@
 #define _GFXVulkanWINDOWTARGET_H_
 
 #include "gfx/gfxTarget.h"
+#include "windowManager/platformWindow.h"
 
 class GFXVulkanWindowTarget : public GFXWindowTarget
 {
@@ -46,20 +47,39 @@ public:
    virtual void resetMode();
    virtual void zombify() { }
    virtual void resurrect() { }
-   
-   virtual void resolveTo(GFXTextureObject* obj);
+
+	void resolveTo(GFXTextureObject* obj) override;
    
    void _onAppSignal(WindowId wnd, S32 event);
-   
+
+	void init(VkSurfaceKHR &in_surface);	
+
+	VkSurfaceFormatKHR getSwapChainImageFormat() { return surface_format; };
+
+	VkRenderPass getRenderPass() { return renderPass; };
+	U32 getSwapchainImageCount() const { return swapchain_images.size(); };
 private:
    friend class GFXVulkanDevice;
 
-   //GLuint mCopyFBO, mBackBufferFBO;
-   GFXTexHandle mBackBufferColorTex, mBackBufferDepthTex;
+   VkFramebuffer mCopyFBO, mBackBufferFBO;
+   //GFXTexHandle mBackBufferColorTex, mBackBufferDepthTex;
    Point2I size;   
    GFXDevice* mDevice;
 
-   VkSurfaceKHR* mSurface;
+   VkSurfaceKHR mSurface;
+   VkSurfaceFormatKHR surface_format;
+   std::vector<VkImageView> swapchain_images;
+
+	VkSwapchainKHR mSwapChain;
+
+	VkQueue queue;
+	VkExtent2D size_of_images;
+	U32 number_of_images;
+	VkImageUsageFlags image_usage;
+	VkSurfaceTransformFlagBitsKHR surface_transform;
+	VkFormat image_format;
+	VkColorSpaceKHR image_color_space;
+	VkPresentModeKHR present_mode;
 
    void* mContext;
    void* mFullscreenContext;
@@ -69,7 +89,26 @@ private:
    //void _WindowPresent();
    ////set this windows context to be current
    //void _makeContextCurrent();
-   
+
+	VkSurfaceCapabilitiesKHR surface_capabilities;
+	bool getSurfaceCapabilities();
+
+	void chooseSwapchainSize();
+	void chooseMinSwapchainImages();
+	bool chooseUsages(VkImageUsageFlags desired_usages);
+	bool selectSwapchainImagesTransformation(VkSurfaceTransformFlagBitsKHR desired_transform);
+	bool selectSwapchainImagesFormat(VkSurfaceFormatKHR desired_surface_format);
+	bool chooseSwapPresentMode(VkPresentModeKHR _present_mode = VK_PRESENT_MODE_MAILBOX_KHR);
+
+	std::vector<VkSubpassDependency> dependencies;
+
+	VkRenderPass renderPass;
+	VkPipeline graphicsPipeline;
+
+	bool createSwapchain();
+	bool initSwapchainImages();
+	bool createRenderPass();
+	bool createPipeline();
 };
 
 #endif

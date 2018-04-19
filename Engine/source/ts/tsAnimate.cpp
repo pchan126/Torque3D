@@ -36,8 +36,8 @@ S32 QSORT_CALLBACK FN_CDECL compareThreads( const void* e1, const void* e2)
 void TSShapeInstance::sortThreads()
 {
    PROFILE_SCOPE( TSShapeInstance_sortThreads );
-   dQsort(mThreadList.address(),mThreadList.size(),sizeof(TSThread*),compareThreads);
-   dQsort(mTransitionThreads.address(),mTransitionThreads.size(),sizeof(TSThread*),compareThreads);
+   dQsort(mThreadList.data(),mThreadList.size(),sizeof(TSThread*),compareThreads);
+   dQsort(mTransitionThreads.data(),mTransitionThreads.size(),sizeof(TSThread*),compareThreads);
 }
 
 void TSShapeInstance::setDirty(U32 dirty)

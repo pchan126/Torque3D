@@ -141,7 +141,6 @@ GuiCanvas::GuiCanvas(): GuiControl(),
    mHoverControlStart = Platform::getRealMilliseconds();
    mHoverPosition = getCursorPos();
 
-   mFences = NULL;
    mNextFenceIdx = -1;
 
 #ifndef _XBOX
@@ -154,7 +153,7 @@ GuiCanvas::GuiCanvas(): GuiControl(),
 GuiCanvas::~GuiCanvas()
 {
    SAFE_DELETE(mPlatformWindow);
-   SAFE_DELETE_ARRAY( mFences );
+   //SAFE_DELETE_ARRAY( mFences );
 }
 
 //------------------------------------------------------------------------------
@@ -1673,21 +1672,22 @@ void GuiCanvas::maintainSizing()
 
 void GuiCanvas::setupFences()
 {
-   // Destroy old fences
-   SAFE_DELETE_ARRAY( mFences );
+   //// Destroy old fences
+   //SAFE_DELETE_ARRAY( mFences );
 
-   // Now create the new ones
-   if( mNumFences > 0 )
-   {
-      mFences = new GFXFence*[mNumFences];
+   //// Now create the new ones
+   //if( mNumFences > 0 )
+   //{
+   //   mFences = new GFXFence*[mNumFences];
 
-      // Allocate the new fences
-      for( S32 i = 0; i < mNumFences; i++ )
-         mFences[i] = GFX->createFence();
-   }
+   //   // Allocate the new fences
+   //   for( S32 i = 0; i < mNumFences; i++ )
+   //      mFences[i] = GFX->createFence();
+   //}
 
-   // Reset state
-   mNextFenceIdx = 0;
+   //// Reset state
+   //mNextFenceIdx = 0;
+	GFX->createFences( mNumFences );
 }
 
 void GuiCanvas::renderFrame(bool preRenderOnly, bool bufferSwap /* = true */)
@@ -1950,21 +1950,23 @@ void GuiCanvas::renderFrame(bool preRenderOnly, bool bufferSwap /* = true */)
 
    PROFILE_END();
 
-   // Fence logic here, because this is where endScene is called.
-   if( mNumFences > 0 )
-   {
-      // Issue next fence
-      mFences[mNextFenceIdx]->issue();
+   //// Fence logic here, because this is where endScene is called.
+   //if( mNumFences > 0 )
+   //{
+   //   // Issue next fence
+   //   mFences[mNextFenceIdx]->issue();
 
-      mNextFenceIdx++;
-      
-      // Wrap the next fence around to first if we're maxxed
-      if( mNextFenceIdx >= mNumFences )
-         mNextFenceIdx = 0;
+   //   mNextFenceIdx++;
+   //   
+   //   // Wrap the next fence around to first if we're maxxed
+   //   if( mNextFenceIdx >= mNumFences )
+   //      mNextFenceIdx = 0;
 
-      // Block on previous fence
-      mFences[mNextFenceIdx]->block();
-   }
+   //   // Block on previous fence
+   //   mFences[mNextFenceIdx]->block();
+   //}
+
+	GFX->waitForFences();
 
    PROFILE_START(GFXEndScene);
    GFX->endScene();

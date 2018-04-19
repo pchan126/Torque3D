@@ -700,7 +700,7 @@ DecalInstance* DecalManager::raycast( const Point3F &start, const Point3F &end, 
       return NULL;
 
    gSortPoint = start;
-   dQsort( hitDecals.address(), hitDecals.size(), sizeof(DecalInstance*), cmpDecalDistance );
+   dQsort( hitDecals.data(), hitDecals.size(), sizeof(DecalInstance*), cmpDecalDistance );
    return hitDecals[0];
 }
 
@@ -723,7 +723,7 @@ U32 DecalManager::_generateConvexHull( const Vector<Point3F> &points, Vector<Poi
    }
 
    // Sort our input points.
-   dQsort( points.address(), points.size(), sizeof( Point3F ), cmpPointsXY ); 
+   dQsort( points.data(), points.size(), sizeof( Point3F ), cmpPointsXY ); 
 
    U32 n = points.size();
 
@@ -901,7 +901,7 @@ void DecalManager::_generateWindingOrder( const Point3F &cornerPoint, Vector<Poi
       tmpPoints.push_back( Point4F( pnt.x, pnt.y, pnt.z, theta ) );
    }
 
-   dQsort( tmpPoints.address(), tmpPoints.size(), sizeof( Point4F ), cmpQuadPointTheta ); 
+   dQsort( tmpPoints.data(), tmpPoints.size(), sizeof( Point4F ), cmpQuadPointTheta ); 
 
    for ( U32 i = 0; i < tmpPoints.size(); i++ )
    {
@@ -1039,7 +1039,7 @@ void DecalManager::prepRenderImage( SceneRenderState* state )
 
          // Skip the sphere if it is not visible in any of its zones.
 
-         if( cullingState.isCulled( worldSphere, decalSphere->mZones.address(), decalSphere->mZones.size() ) )
+         if( cullingState.isCulled( worldSphere, decalSphere->mZones.data(), decalSphere->mZones.size() ) )
             continue;
       }  
 
@@ -1190,7 +1190,7 @@ void DecalManager::prepRenderImage( SceneRenderState* state )
    // be rendered together in the same draw call.
 
    PROFILE_START( DecalManager_RenderDecals_Sort );
-   dQsort( mDecalQueue.address(), mDecalQueue.size(), sizeof(DecalInstance*), cmpDecalRenderOrder );
+   dQsort( mDecalQueue.data(), mDecalQueue.size(), sizeof(DecalInstance*), cmpDecalRenderOrder );
    PROFILE_END();
 
    PROFILE_SCOPE( DecalManager_RenderDecals_RenderBatch );

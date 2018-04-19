@@ -86,11 +86,11 @@ void afxParticlePool::pool_renderObject_Normal(RenderPassManager *renderManager,
   }
 
   // qsort the list into far to near ordering
-  dQsort(orderedVector.address(), orderedVector.size(), sizeof(SortParticlePool), cmpSortParticlePool);
+  dQsort(orderedVector.data(), orderedVector.size(), sizeof(SortParticlePool), cmpSortParticlePool);
 
   static Vector<GFXVertexPCT> tempBuff(2048);
   tempBuff.reserve(n_parts*4 + 64); // make sure tempBuff is big enough
-  GFXVertexPCT *buffPtr = tempBuff.address(); // use direct pointer (faster)
+  GFXVertexPCT *buffPtr = tempBuff.data(); // use direct pointer (faster)
 
   Point3F basePoints[4];
   basePoints[0] = Point3F(-1.0, 0.0, -1.0);
@@ -121,7 +121,7 @@ void afxParticlePool::pool_renderObject_Normal(RenderPassManager *renderManager,
   }
   // lock and copy tempBuff to video RAM
   GFXVertexPCT *verts = mVertBuff.lock();
-  dMemcpy( verts, tempBuff.address(), n_parts * 4 * sizeof(GFXVertexPCT) );
+  dMemcpy( verts, tempBuff.data(), n_parts * 4 * sizeof(GFXVertexPCT) );
   mVertBuff.unlock();
 
   //MeshRenderInst *ri = gRenderInstManager->allocInst<MeshRenderInst>();
@@ -212,7 +212,7 @@ void afxParticlePool::pool_renderObject_TwoPass(RenderPassManager *renderManager
 
   static Vector<GFXVertexPCT> tempBuff(2048);
   tempBuff.reserve(n_parts*4 + 64); // make sure tempBuff is big enough
-  GFXVertexPCT *buffPtr = tempBuff.address(); // use direct pointer (faster)
+  GFXVertexPCT *buffPtr = tempBuff.data(); // use direct pointer (faster)
 
   Point3F basePoints[4];
   basePoints[0] = Point3F(-1.0, 0.0, -1.0);
@@ -253,7 +253,7 @@ void afxParticlePool::pool_renderObject_TwoPass(RenderPassManager *renderManager
   }
   // lock and copy tempBuff to video RAM
   GFXVertexPCT *verts = mVertBuff.lock();
-  dMemcpy( verts, tempBuff.address(), n_parts * 4 * sizeof(GFXVertexPCT) );
+  dMemcpy( verts, tempBuff.data(), n_parts * 4 * sizeof(GFXVertexPCT) );
   mVertBuff.unlock();
 
   ParticleRenderInst *ri = renderManager->allocInst<ParticleRenderInst>();
@@ -289,7 +289,7 @@ void afxParticlePool::pool_renderObject_TwoPass(RenderPassManager *renderManager
   //~~~~~~~~~~~~~~~~~~~~//~~~~~~~~~~~~~~~~~~~~//
   // 2nd-pass
 
-  buffPtr = tempBuff.address();
+  buffPtr = tempBuff.data();
 
   bbox_center.z = mObjBox.minExtents.z;
   F32 max_radius = (max_d-min_d)*0.5f;
@@ -457,7 +457,7 @@ void afxParticlePool::pool_renderObject_TwoPass(RenderPassManager *renderManager
 
   // lock and copy tempBuff to video RAM
   verts = mVertBuff2.lock();
-  dMemcpy( verts, tempBuff.address(), n_parts * 4 * sizeof(GFXVertexPCT) );
+  dMemcpy( verts, tempBuff.data(), n_parts * 4 * sizeof(GFXVertexPCT) );
   mVertBuff2.unlock();
 
   ri = renderManager->allocInst<ParticleRenderInst>();

@@ -73,7 +73,7 @@ bool GFXShader::init(   const Torque::Path &vertFile,
       mInstancingFormat->copy(*instanceFormat);
    }
 
-   // Store the inputs for use in reloading.
+	// Store the inputs for use in reloading.
    mVertexFile = vertFile;
    mPixelFile = pixFile;
    mPixVersion = pixVersion;

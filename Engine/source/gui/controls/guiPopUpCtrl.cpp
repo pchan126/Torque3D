@@ -592,7 +592,7 @@ void GuiPopUpMenuCtrl::sort()
    
    S32 size = mEntries.size();
    if( size > 0 )
-      dQsort( mEntries.address(), size, sizeof(Entry), textCompare);
+      dQsort( mEntries.data(), size, sizeof(Entry), textCompare);
       
    if( selId != -1 )
       setSelected( selId, false );
@@ -606,7 +606,7 @@ void GuiPopUpMenuCtrl::sortID()
    
    S32 size = mEntries.size();
    if( size > 0 )
-      dQsort( mEntries.address(), size, sizeof(Entry), idCompare);
+      dQsort( mEntries.data(), size, sizeof(Entry), idCompare);
 
    if( selId != -1 )
       setSelected( selId, false );
@@ -975,7 +975,7 @@ void GuiPopUpMenuCtrl::onRender( Point2I offset, const RectI &updateRect )
          {
             // We're making use of a bitmap border, so take into account the
             // right cap of the border.
-            RectI* bitmapBounds = mProfile->mBitmapArrayRects.address();
+            RectI* bitmapBounds = mProfile->mBitmapArrayRects.data();
             localStart.x = getWidth() - bitmapBounds[2].extent.x - txt_w;
          } 
          else
@@ -988,7 +988,7 @@ void GuiPopUpMenuCtrl::onRender( Point2I offset, const RectI &updateRect )
          {
             // We're making use of a bitmap border, so take into account the
             // right cap of the border.
-            RectI* bitmapBounds = mProfile->mBitmapArrayRects.address();
+            RectI* bitmapBounds = mProfile->mBitmapArrayRects.data();
             localStart.x = (getWidth() - bitmapBounds[2].extent.x - txt_w) / 2;
 
          } else
@@ -1007,7 +1007,7 @@ void GuiPopUpMenuCtrl::onRender( Point2I offset, const RectI &updateRect )
             {
                // We're making use of a bitmap border, so take into account the
                // right cap of the border.
-               RectI* bitmapBounds = mProfile->mBitmapArrayRects.address();
+               RectI* bitmapBounds = mProfile->mBitmapArrayRects.data();
                localStart.x = getWidth() - bitmapBounds[2].extent.x - txt_w;
             } 
             else
@@ -1059,7 +1059,7 @@ void GuiPopUpMenuCtrl::onRender( Point2I offset, const RectI &updateRect )
          {
             // We're making use of a bitmap border, so take into account the
             // right cap of the border.
-            RectI* bitmapBounds = mProfile->mBitmapArrayRects.address();
+            RectI* bitmapBounds = mProfile->mBitmapArrayRects.data();
             Point2I textpos = localToGlobalCoord( Point2I( getWidth() - txt_w - bitmapBounds[2].extent.x, localStart.y ) );
             drawUtil->drawText( mProfile->mFont, textpos, buff, mProfile->mFontColors );
 

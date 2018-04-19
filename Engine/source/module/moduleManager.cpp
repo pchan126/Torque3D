@@ -2172,7 +2172,7 @@ bool ModuleManager::registerModule( const char* pModulePath, const char* pModule
     pDefinitions->push_back( pModuleDefinition );
 
     // Sort module definitions by version Id so that higher versions appear first.
-    dQsort( pDefinitions->address(), pDefinitions->size(), sizeof(ModuleDefinition*), moduleDefinitionVersionIdSort );
+    dQsort( pDefinitions->data(), pDefinitions->size(), sizeof(ModuleDefinition*), moduleDefinitionVersionIdSort );
 
     // Find module group.
     typeGroupModuleHash::iterator moduleGroupItr = mGroupModules.find( moduleGroup );

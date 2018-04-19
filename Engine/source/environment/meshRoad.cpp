@@ -1511,7 +1511,7 @@ bool MeshRoad::castRay( const Point3F &s, const Point3F &e, RayInfo *info )
       }
    }
 
-   dQsort( hitSegments.address(), hitSegments.size(), sizeof(MeshRoadHitSegment), compareHitSegments );
+   dQsort( hitSegments.data(), hitSegments.size(), sizeof(MeshRoadHitSegment), compareHitSegments );
 
    U32 idx0, idx1, idx2;
    F32 t;
@@ -1757,9 +1757,9 @@ void MeshRoad::_generateSegments()
          polylist.triangulate();
 
          PhysicsCollision *colShape = PHYSICSMGR->createCollision();
-         colShape->addTriangleMesh( polylist.mVertexList.address(),
+         colShape->addTriangleMesh( polylist.mVertexList.data(),
             polylist.mVertexList.size(),
-            polylist.mIndexList.address(),
+            polylist.mIndexList.data(),
             polylist.mIndexList.size() / 3,
             MatrixF::Identity );
 

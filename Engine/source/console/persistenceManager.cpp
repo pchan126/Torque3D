@@ -1957,7 +1957,7 @@ bool PersistenceManager::saveDirty()
    }
 
    // Sort by filename and declaration lines
-   dQsort(mDirtyObjects.address(), mDirtyObjects.size(), sizeof(DirtyList::value_type), compareFiles);
+   dQsort(mDirtyObjects.data(), mDirtyObjects.size(), sizeof(DirtyList::value_type), compareFiles);
 
    for (U32 i = 0; i < mDirtyObjects.size(); i++)
    {

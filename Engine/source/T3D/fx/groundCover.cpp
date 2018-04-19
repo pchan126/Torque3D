@@ -934,7 +934,7 @@ void GroundCover::_initialize( U32 cellCount, U32 cellPlacementCount )
 
    // Reset the grid sizes.
    mCellGrid.setSize( cellCount );
-   dMemset( mCellGrid.address(), 0, mCellGrid.memSize() );
+   dMemset( mCellGrid.data(), 0, mCellGrid.memSize() );
    mScratchGrid.setSize( cellCount );
 
    // Rebuild the texture aspect scales for each type.
@@ -1402,7 +1402,7 @@ void GroundCover::_updateCoverGrid( const Frustum &culler )
       return;
 
    // Clear the scratch grid.
-   dMemset( mScratchGrid.address(), 0, mScratchGrid.memSize() );
+   dMemset( mScratchGrid.data(), 0, mScratchGrid.memSize() );
 
    // Calculate the normal cell size here.
    const F32 cellSize = ( mRadius * 2.0f ) / (F32)(mGridSize - 1);

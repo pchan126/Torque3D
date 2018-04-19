@@ -77,17 +77,24 @@ public:
    virtual void resurrect();
    virtual const String describeSelf() const;
 
-   void initSamplerState(const GFXSamplerStateDesc &ssd);
-   
+   bool initSamplerState(const GFXSamplerStateDesc &ssd);
+
+	//bool CreateSampledImage(GFXFormat gfx_format);
+	
+   void transitionImageLayout( VkFormat format, VkImageLayout newLayout) const;
+
 private:
    friend class GFXVulkanTextureManager;
    typedef GFXTextureObject Parent;
-   /// Internal Vulkan object
+
+   bool mNeedInitSamplerState;
+
+	/// Internal Vulkan object
 		VkSampler sampler;
 		VkImage image;
 		VkImageLayout imageLayout;
 		VkDeviceMemory deviceMemory;
-		VkImageView view;
+		VkImageView image_view;
 	
    U32 mBytesPerTexel;
    GFXLockedRect mLockedRect;

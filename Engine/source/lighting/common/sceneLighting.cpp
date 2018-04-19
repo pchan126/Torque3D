@@ -1001,13 +1001,13 @@ void SceneLighting::processCache()
 
 	// determine the method (default to least recently used)
 	if(!dStricmp(purgeMethod, "minSize"))
-		dQsort(files.address(), files.size(), sizeof(CacheEntry), minSizeSort);
+		dQsort(files.data(), files.size(), sizeof(CacheEntry), minSizeSort);
 	else if(!dStricmp(purgeMethod, "maxSize"))
-		dQsort(files.address(), files.size(), sizeof(CacheEntry), maxSizeSort);
+		dQsort(files.data(), files.size(), sizeof(CacheEntry), maxSizeSort);
 	else if(!dStricmp(purgeMethod, "lastCreated"))
-		dQsort(files.address(), files.size(), sizeof(CacheEntry), lastCreatedSort);
+		dQsort(files.data(), files.size(), sizeof(CacheEntry), lastCreatedSort);
 	else
-		dQsort(files.address(), files.size(), sizeof(CacheEntry), lastModifiedSort);
+		dQsort(files.data(), files.size(), sizeof(CacheEntry), lastModifiedSort);
 
 	// go through and remove the best candidate first (sorted reverse)
 	while(((curCacheSize >> 10) > quota) && files.size())
@@ -1046,7 +1046,7 @@ U32 SceneLighting::calcMissionCRC()
 	crc.push_back(curInfo.mChunkCRC);
 
 	// sort them (order may not have been preserved)
-	dQsort(crc.address(), crc.size(), sizeof(U32), compareS32);
+	dQsort(crc.data(), crc.size(), sizeof(U32), compareS32);
 
 #ifdef TORQUE_BIG_ENDIAN
    // calculateCRC operates on 8-bit chunks of memory. The memory is a vector
@@ -1057,7 +1057,7 @@ U32 SceneLighting::calcMissionCRC()
       crc[i] = endianSwap( crc[i] );
 #endif
 
-   return(CRC::calculateCRC(crc.address(), sizeof(U32) * crc.size(), 0xffffffff));
+   return(CRC::calculateCRC(crc.data(), sizeof(U32) * crc.size(), 0xffffffff));
 }
 
 bool SceneLighting::ObjectProxy::calcValidation()

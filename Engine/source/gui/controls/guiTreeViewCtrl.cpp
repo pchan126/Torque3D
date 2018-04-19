@@ -157,8 +157,8 @@ static void itemSortList( GuiTreeViewCtrl::Item*& firstChild, bool caseSensitive
 
       // Sort both vectors.
 
-      dQsort( parents.address(), parents.size(), sizeof( GuiTreeViewCtrl::Item* ), caseSensitive ? itemCompareCaseSensitive : itemCompareCaseInsensitive );
-      dQsort( items.address(), items.size(), sizeof( GuiTreeViewCtrl::Item* ), caseSensitive ? itemCompareCaseSensitive : itemCompareCaseInsensitive );
+      dQsort( parents.data(), parents.size(), sizeof( GuiTreeViewCtrl::Item* ), caseSensitive ? itemCompareCaseSensitive : itemCompareCaseInsensitive );
+      dQsort( items.data(), items.size(), sizeof( GuiTreeViewCtrl::Item* ), caseSensitive ? itemCompareCaseSensitive : itemCompareCaseInsensitive );
 
       // Wipe current child chain then reconstruct it in reverse
       // as we prepend items.

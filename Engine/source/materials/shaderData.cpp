@@ -45,13 +45,15 @@ ConsoleDocClass( ShaderData,
 	"Shaders are API specific, so DirectX and OpenGL shaders must be explicitly identified.\n\n "
 
 	"@tsexample\n"
-	"// Used for the procedural clould system\n"
+	"// Used for the procedural cloud system\n"
 	"singleton ShaderData( CloudLayerShader )\n"
 	"{\n"
    "	DXVertexShaderFile   = $Core::CommonShaderPath @ \"/cloudLayerV.hlsl\";\n"
    "	DXPixelShaderFile    = $Core::CommonShaderPath @ \"/cloudLayerP.hlsl\";\n"
    "	OGLVertexShaderFile = $Core::CommonShaderPath @ \"/gl/cloudLayerV.glsl\";\n"
    "	OGLPixelShaderFile = $Core::CommonShaderPath @ \"/gl/cloudLayerP.glsl\";\n"
+   "	SpirvVertexShaderFile = $Core::CommonShaderPath @ \"/spirv/cloudLayerV.spv\";\n"
+   "	SpirvPixelShaderFile = $Core::CommonShaderPath @ \"/spirv/cloudLayerP.spv\";\n"
 	"	pixVersion = 2.0;\n"
 	"};\n"
 	"@endtsexample\n\n"
@@ -92,7 +94,16 @@ void ShaderData::initPersistFields()
 	   "It must contain only one program and no vertex shader, just the pixel "
 	   "shader.");
 
-   addField("useDevicePixVersion",  TypeBool,            Offset(mUseDevicePixVersion,   ShaderData),
+   addField("SpirvVertexShaderFile",  TypeStringFilename,  Offset(mSpirvVertexShaderName,   ShaderData),
+	   "@brief %Path to an SpirV vertex shader file to use for this ShaderData.\n\n"
+	   "It must contain only one program and no pixel shader, just the vertex shader.");
+
+   addField("SpirvPixelShaderFile",   TypeStringFilename,  Offset(mSpirvPixelShaderName,  ShaderData),
+	   "@brief %Path to an SpirV pixel shader file to use for this ShaderData.\n\n"
+	   "It must contain only one program and no vertex shader, just the pixel "
+	   "shader.");
+
+	addField("useDevicePixVersion",  TypeBool,            Offset(mUseDevicePixVersion,   ShaderData),
 	   "@brief If true, the maximum pixel shader version offered by the graphics card will be used.\n\n"
 	   "Otherwise, the script-defined pixel shader version will be used.\n\n");
 
@@ -102,6 +113,9 @@ void ShaderData::initPersistFields()
 	   "The shader will not run properly if the hardware does not support the "
 	   "level of shader compiled.");
    
+   addField("vertexFormat", TypeRealString, Offset(mVertString, ShaderData),
+	   "@brief format of the input vertex, used for Vulkan Shaders");
+
    addField("defines",              TypeRealString,      Offset(mDefines,   ShaderData), 
 	   "@brief String of case-sensitive defines passed to the shader compiler.\n\n"
       "The string should be delimited by a semicolon, tab, or newline character."
@@ -254,7 +268,17 @@ GFXShader* ShaderData::_createShader( const Vector<GFXShaderMacro> &macros )
          break;
       }
          
-      default:
+      case Vulkan:
+      {
+         success = shader->init( mSpirvVertexShaderName,
+                                 mSpirvPixelShaderName,
+                                 pixver,
+                                 macros,
+                                 samplers);
+         break;
+      }
+
+   	default:
          // Other device types are assumed to not support shaders.
          success = false;
          break;

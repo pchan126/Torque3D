@@ -72,6 +72,13 @@ public:
    String name;
    GFXShaderConstType constType;   
    U32 arraySize; // > 1 means it is an array!
+   GFXShaderConstDesc(): name(""), constType(GFXSCT_Float), arraySize(0)
+	{
+	}
+
+	GFXShaderConstDesc(String _name, GFXShaderConstType _constType, U32 _arraySize = 1): name(_name), constType(_constType), arraySize(_arraySize)
+   {
+   }
 };
 
 /// This is an opaque handle used by GFXShaderConstBuffer clients to set individual shader constants.

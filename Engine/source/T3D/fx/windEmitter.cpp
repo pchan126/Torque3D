@@ -121,7 +121,7 @@ bool WindEmitter::findBest(   const Point3F& cameraPos,
    }
 
    // Sort the results by score!
-   dQsort( best.address(), best.size(), sizeof(WindEmitter*), &WindEmitter::_sortByScore );
+   dQsort( best.data(), best.size(), sizeof(WindEmitter*), &WindEmitter::_sortByScore );
 
    // Clip the results to the max requested.
    if ( best.size() > maxResults )

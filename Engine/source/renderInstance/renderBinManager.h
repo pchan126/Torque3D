@@ -110,12 +110,14 @@ protected:
 
    /// The list of additional render instance types 
    /// this bin wants to process.
-   Vector<RenderInstType> mOtherTypes;
+   std::vector<RenderInstType> mOtherTypes;
 
    /// The render pass manager this bin is registered with.
    RenderPassManager *mRenderPass;
 
    MaterialOverrideDelegate mMatOverrideDelegate;
+
+	GFXRenderBinImpl* render_bin_impl;
 
    virtual void setupSGData(MeshRenderInst *ri, SceneData &data );
    virtual void internalAddElement(RenderInst* inst);
@@ -136,6 +138,7 @@ protected:
 inline bool RenderBinManager::newPassNeeded( MeshRenderInst *ri, MeshRenderInst* nextRI ) const
 {
    if ( ri == nextRI )
+
       return false;
 
    // We can depend completely on the state hint to check

@@ -1064,12 +1064,12 @@ unsigned char *NavMesh::buildTileData(const Tile &tile, TileData &data, U32 &dat
    params.detailTris = data.pmd->tris;
    params.detailTriCount = data.pmd->ntris;
 
-   params.offMeshConVerts = mLinkVerts.address();
-   params.offMeshConRad = mLinkRads.address();
-   params.offMeshConDir = mLinkDirs.address();
-   params.offMeshConAreas = mLinkAreas.address();
-   params.offMeshConFlags = mLinkFlags.address();
-   params.offMeshConUserID = mLinkIDs.address();
+   params.offMeshConVerts = mLinkVerts.data();
+   params.offMeshConRad = mLinkRads.data();
+   params.offMeshConDir = mLinkDirs.data();
+   params.offMeshConAreas = mLinkAreas.data();
+   params.offMeshConFlags = mLinkFlags.data();
+   params.offMeshConUserID = mLinkIDs.data();
    params.offMeshConCount = mLinkIDs.size();
 
    params.walkableHeight = mWalkableHeight;
@@ -1601,12 +1601,12 @@ bool NavMesh::load()
    setLinkCount(s);
    if (s > 0)
    {
-      file.read(sizeof(F32) * s * 6, (char*)const_cast<F32*>(mLinkVerts.address()));
-      file.read(sizeof(F32) * s, (char*)const_cast<F32*>(mLinkRads.address()));
-      file.read(sizeof(U8) * s, (char*)const_cast<U8*>(mLinkDirs.address()));
-      file.read(sizeof(U8) * s, (char*)const_cast<U8*>(mLinkAreas.address()));
-      file.read(sizeof(U16) * s, (char*)const_cast<U16*>(mLinkFlags.address()));
-      file.read(sizeof(F32) * s, (char*)const_cast<U32*>(mLinkIDs.address()));
+      file.read(sizeof(F32) * s * 6, (char*)const_cast<F32*>(mLinkVerts.data()));
+      file.read(sizeof(F32) * s, (char*)const_cast<F32*>(mLinkRads.data()));
+      file.read(sizeof(U8) * s, (char*)const_cast<U8*>(mLinkDirs.data()));
+      file.read(sizeof(U8) * s, (char*)const_cast<U8*>(mLinkAreas.data()));
+      file.read(sizeof(U16) * s, (char*)const_cast<U16*>(mLinkFlags.data()));
+      file.read(sizeof(F32) * s, (char*)const_cast<U32*>(mLinkIDs.data()));
    }
    mLinksUnsynced.fill(false);
    mLinkSelectStates.fill(Unselected);
@@ -1678,12 +1678,12 @@ bool NavMesh::save()
    file.write(sizeof(S32), (const char*)&s);
    if (s > 0)
    {
-      file.write(sizeof(F32) * s * 6, (const char*)mLinkVerts.address());
-      file.write(sizeof(F32) * s,     (const char*)mLinkRads.address());
-      file.write(sizeof(U8) * s,      (const char*)mLinkDirs.address());
-      file.write(sizeof(U8) * s,      (const char*)mLinkAreas.address());
-      file.write(sizeof(U16) * s,     (const char*)mLinkFlags.address());
-      file.write(sizeof(U32) * s,     (const char*)mLinkIDs.address());
+      file.write(sizeof(F32) * s * 6, (const char*)mLinkVerts.data());
+      file.write(sizeof(F32) * s,     (const char*)mLinkRads.data());
+      file.write(sizeof(U8) * s,      (const char*)mLinkDirs.data());
+      file.write(sizeof(U8) * s,      (const char*)mLinkAreas.data());
+      file.write(sizeof(U16) * s,     (const char*)mLinkFlags.data());
+      file.write(sizeof(U32) * s,     (const char*)mLinkIDs.data());
    }
 
    file.close();

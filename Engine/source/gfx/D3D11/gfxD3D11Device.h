@@ -311,6 +311,14 @@ public:
 
    GFXFence *createFence();
 
+	// Fences
+
+	U32 mNumFences;
+	U32 mNextFenceIdx;
+	GFXFence** mFences;
+	virtual void createFences(U32 numFences) override;
+	virtual void waitForFences() override;
+
    GFXOcclusionQuery* createOcclusionQuery();   
 
    // Default multisample parameters

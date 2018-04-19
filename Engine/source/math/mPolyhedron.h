@@ -147,19 +147,19 @@ struct PolyhedronVectorData : public PolyhedronData
 
       /// Return the planes that make up the polyhedron.
       /// @note The normals of these planes are facing *inwards*.
-      PlaneF* getPlanes() const { return planeList.address(); }
+      PlaneF* getPlanes() const { return planeList.data(); }
 
       /// Return the number of points that this polyhedron has.
       U32 getNumPoints() const { return pointList.size(); }
 
       /// 
-      Point3F* getPoints() const { return pointList.address(); }
+      Point3F* getPoints() const { return pointList.data(); }
 
       /// Return the number of edges that this polyhedron has.
       U32 getNumEdges() const { return edgeList.size(); }
 
       ///
-      Edge* getEdges() const { return edgeList.address(); }
+      Edge* getEdges() const { return edgeList.data(); }
 
       /// @}
 
@@ -258,19 +258,19 @@ struct PolyhedronFixedVectorData : public PolyhedronData
 
       /// Return the planes that make up the polyhedron.
       /// @note The normals of these planes are facing *inwards*.
-      PlaneF* getPlanes() const { return planeList.address(); }
+      PlaneF* getPlanes() const { return planeList.data(); }
 
       /// Return the number of points that this polyhedron has.
       U32 getNumPoints() const { return pointList.size(); }
 
       /// 
-      Point3F* getPoints() const { return pointList.address(); }
+      Point3F* getPoints() const { return pointList.data(); }
 
       /// Return the number of edges that this polyhedron has.
       U32 getNumEdges() const { return edgeList.size(); }
 
       ///
-      Edge* getEdges() const { return edgeList.address(); }
+      Edge* getEdges() const { return edgeList.data(); }
 
       /// @}
 

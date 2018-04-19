@@ -267,7 +267,7 @@ void SimFieldDictionary::writeFields(SimObject *obj, Stream &stream, U32 tabStop
    }
 
    // Sort Entries to prevent version control conflicts
-   dQsort(flist.address(), flist.size(), sizeof(Entry *), compareEntries);
+   dQsort(flist.data(), flist.size(), sizeof(Entry *), compareEntries);
 
    // Save them out
    for (Vector<Entry *>::iterator itr = flist.begin(); itr != flist.end(); itr++)
@@ -309,7 +309,7 @@ void SimFieldDictionary::printFields(SimObject *obj)
          flist.push_back(walk);
       }
    }
-   dQsort(flist.address(), flist.size(), sizeof(Entry *), compareEntries);
+   dQsort(flist.data(), flist.size(), sizeof(Entry *), compareEntries);
 
    for (Vector<Entry *>::iterator itr = flist.begin(); itr != flist.end(); itr++)
    {

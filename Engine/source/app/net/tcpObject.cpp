@@ -443,7 +443,7 @@ bool TCPObject::sendFile(const char* fileName)
    readFile.read(buffer.size(), &buffer);
 
    //Send the buffer
-   send(buffer.address(), buffer.size());
+   send(buffer.data(), buffer.size());
 
    	return true;
 }

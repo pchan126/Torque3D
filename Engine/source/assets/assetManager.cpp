@@ -1594,7 +1594,7 @@ void AssetManager::dumpDeclaredAssets( void ) const
     }
 
     // Sort asset definitions.
-    dQsort( assetDefinitions.address(), assetDefinitions.size(), sizeof(const AssetDefinition*), descendingAssetDefinitionLoadCount );
+    dQsort( assetDefinitions.data(), assetDefinitions.size(), sizeof(const AssetDefinition*), descendingAssetDefinitionLoadCount );
 
     // Info.
     Con::printSeparator();

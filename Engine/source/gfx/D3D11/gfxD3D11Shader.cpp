@@ -533,7 +533,7 @@ void GFXD3D11ShaderConstBuffer::set(GFXShaderConstHandle* handle, const MatrixF*
 
    if (matrixType == GFXSCT_Float4x3)
    {
-      dMemcpy(transposed.address(), mat, arraySize * sizeof(MatrixF));
+      dMemcpy(transposed.data(), mat, arraySize * sizeof(MatrixF));
    }
    else
    {

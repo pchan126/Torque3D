@@ -1055,7 +1055,7 @@ void afxConstraintMgr::initConstraintDefs(Vector<afxConstraintDef>& all_defs, bo
     {
       // sort the defs
       if (ghost_defs.size() > 1)
-        dQsort(ghost_defs.address(), ghost_defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
+        dQsort(ghost_defs.data(), ghost_defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
       
       S32 last = 0;
       defineConstraint(OBJECT_CONSTRAINT, ghost_defs[0].cons_src_name);
@@ -1093,7 +1093,7 @@ void afxConstraintMgr::initConstraintDefs(Vector<afxConstraintDef>& all_defs, bo
   {
     // sort the defs
     if (defs.size() > 1)
-      dQsort(defs.address(), defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
+      dQsort(defs.data(), defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
     
     Vector<afxConstraintDef> unique_defs;
     S32 last = 0;
@@ -1169,7 +1169,7 @@ void afxConstraintMgr::initConstraintDefs(Vector<afxConstraintDef>& all_defs, bo
 
     // sort the defs
     if (defs.size() > 1)
-      dQsort(defs.address(), defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
+      dQsort(defs.data(), defs.size(), sizeof(afxConstraintDef), cmp_cons_defs);
 
     S32 last = 0;
     names_on_server.push_back(defs[0].cons_src_name);

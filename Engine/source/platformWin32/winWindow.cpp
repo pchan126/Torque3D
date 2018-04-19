@@ -391,7 +391,7 @@ S32 WINAPI WinMain( HINSTANCE hInstance, HINSTANCE, LPSTR lpszCmdLine, S32)
 
    winState.appInstance = hInstance;
 
-   S32 retVal = run(argv.size(), (const char **) argv.address());
+   S32 retVal = run(argv.size(), (const char **) argv.data());
 
    for(U32 j = 1; j < argv.size(); j++)
       dFree(argv[j]);

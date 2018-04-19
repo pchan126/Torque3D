@@ -2664,7 +2664,7 @@ DefineEngineMethod( SimObject, dump, void, ( bool detailed ), ( false ),
    for(U32 i = 0; i < list.size(); i++)
       flist.push_back(&list[i]);
 
-   dQsort(flist.address(),flist.size(),sizeof(AbstractClassRep::Field *),compareFields);
+   dQsort(flist.data(),flist.size(),sizeof(AbstractClassRep::Field *),compareFields);
 
    for(Vector<const AbstractClassRep::Field *>::iterator itr = flist.begin(); itr != flist.end(); itr++)
    {

@@ -33,11 +33,11 @@ void TSShape::fixupOldSkins(S32 numMeshes, S32 numSkins, S32 numDetails, S32 * d
 {
 #if !defined(TORQUE_MAX_LIB)
    // this method not necessary in exporter, and a couple lines won't compile for exporter
-   if (!objects.address() || !meshes.address() || !numSkins)
+   if (!objects.data() || !meshes.data() || !numSkins)
       // not ready for this yet, will catch it on the next pass
       return;
    S32 numObjects = objects.size();
-   TSObject * newObjects = objects.address() + objects.size();
+   TSObject * newObjects = objects.data() + objects.size();
    TSSkinMesh ** skins = (TSSkinMesh**)&meshes[numMeshes];
    Vector<TSSkinMesh*> skinsCopy;
    // Note: newObjects has as much free space as we need, so we just need to keep track of the
@@ -96,7 +96,7 @@ void TSShape::fixupOldSkins(S32 numMeshes, S32 numSkins, S32 numDetails, S32 * d
          numSkinObjects--;
       }
    }
-   dMemcpy(skins,skinsCopy.address(),skinsCopy.size()*sizeof(TSSkinMesh*));
+   dMemcpy(skins,skinsCopy.data(),skinsCopy.size()*sizeof(TSSkinMesh*));
 
    if (subShapeFirstObject.size()==1)
       // as long as only one subshape, we'll now be rendered
@@ -105,7 +105,7 @@ void TSShape::fixupOldSkins(S32 numMeshes, S32 numSkins, S32 numDetails, S32 * d
    // now for something ugly -- we've added somoe objects to hold the skins...
    // now we have to add default states for those objects
    // we also have to increment base states on all the sequences that are loaded
-   dMemmove(objectStates.address()+numObjects+numSkinObjects,objectStates.address()+numObjects,(objectStates.size()-numObjects)*sizeof(ObjectState));
+   dMemmove(objectStates.data()+numObjects+numSkinObjects,objectStates.data()+numObjects,(objectStates.size()-numObjects)*sizeof(ObjectState));
    for (i=numObjects; i<numObjects+numSkinObjects; i++)
    {
       objectStates[i].vis=1.0f;

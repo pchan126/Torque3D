@@ -301,8 +301,8 @@ void RenderDeferredMgr::sort()
 {
    PROFILE_SCOPE( RenderDeferredMgr_sort );
    Parent::sort();
-   dQsort( mTerrainElementList.address(), mTerrainElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
-   dQsort( mObjectElementList.address(), mObjectElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
+   dQsort( mTerrainElementList.data(), mTerrainElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
+   dQsort( mObjectElementList.data(), mObjectElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
 }
 
 void RenderDeferredMgr::clear()

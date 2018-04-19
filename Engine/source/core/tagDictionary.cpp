@@ -309,6 +309,6 @@ static S32 QSORT_CALLBACK idCompare(const void *in_p1, const void *in_p2)
 
 void TagDictionary::sortIdVector(Vector<S32>& out_v)
 {
-   dQsort(out_v.address(), out_v.size(), sizeof(S32), idCompare);
+   dQsort(out_v.data(), out_v.size(), sizeof(S32), idCompare);
 }
 

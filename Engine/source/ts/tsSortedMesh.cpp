@@ -145,19 +145,19 @@ void TSSortedMesh::disassemble()
    TSMesh::disassemble();
 
    tsalloc.set32(clusters.size());
-   tsalloc.copyToBuffer32((S32*)clusters.address(),clusters.size()*8);
+   tsalloc.copyToBuffer32((S32*)clusters.data(),clusters.size()*8);
 
    tsalloc.set32(startCluster.size());
-   tsalloc.copyToBuffer32((S32*)startCluster.address(),startCluster.size());
+   tsalloc.copyToBuffer32((S32*)startCluster.data(),startCluster.size());
 
    tsalloc.set32(firstVerts.size());
-   tsalloc.copyToBuffer32((S32*)firstVerts.address(),firstVerts.size());
+   tsalloc.copyToBuffer32((S32*)firstVerts.data(),firstVerts.size());
 
    tsalloc.set32(numVerts.size());
-   tsalloc.copyToBuffer32((S32*)numVerts.address(),numVerts.size());
+   tsalloc.copyToBuffer32((S32*)numVerts.data(),numVerts.size());
 
    tsalloc.set32(firstTVerts.size());
-   tsalloc.copyToBuffer32((S32*)firstTVerts.address(),firstTVerts.size());
+   tsalloc.copyToBuffer32((S32*)firstTVerts.data(),firstTVerts.size());
 
    tsalloc.set32(alwaysWriteDepth ? 1 : 0);
 

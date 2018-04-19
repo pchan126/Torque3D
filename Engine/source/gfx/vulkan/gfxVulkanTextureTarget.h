@@ -48,10 +48,10 @@ public:
    GFXVulkanTextureTarget();
    virtual ~GFXVulkanTextureTarget();
 
-   virtual const Point2I getSize();
-   virtual GFXFormat getFormat();
-   virtual void attachTexture(RenderSlot slot, GFXTextureObject *tex, U32 mipLevel=0, U32 zOffset = 0);
-   virtual void attachTexture(RenderSlot slot, GFXCubemap *tex, U32 face, U32 mipLevel=0);
+	const Point2I getSize() override;
+	GFXFormat getFormat() override;
+	void attachTexture(RenderSlot slot, GFXTextureObject *tex, U32 mipLevel=0, U32 zOffset = 0) override;
+	void attachTexture(RenderSlot slot, GFXCubemap *tex, U32 face, U32 mipLevel=0) override;
    virtual void clearAttachments();
 
    /// Functions to query internal state
@@ -65,12 +65,15 @@ public:
    void deactivate();
    void zombify();
    void resurrect();
-   virtual const String describeSelf() const;
+	const String describeSelf() const override;
+
+	void resolve() override;
+
+	void resolveTo(GFXTextureObject* obj) override;
    
-   virtual void resolve();
-   
-   virtual void resolveTo(GFXTextureObject* obj);
-   
+   std::vector<VkAttachmentDescription> getAttachmentsDescriptions();
+
+
 protected:
 
    friend class GFXVulkanDevice;
@@ -88,6 +91,7 @@ protected:
    /// These redirect to our internal implementation
    /// @{
    
+
    void applyState();
    void makeActive();
    

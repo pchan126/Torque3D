@@ -58,6 +58,10 @@
 #include "platform/platformTimer.h"
 #endif
 
+#include "gfxRenderPass.h"
+
+
+class RenderBinManager;
 class FontRenderBatcher;
 class GFont;
 class GFXCardProfiler;
@@ -69,6 +73,11 @@ class GFXShader;
 class GFXStateBlock;
 class GFXShaderConstBuffer;
 class GFXTextureManager;
+
+class RenderPassManager;
+class ShadowRenderPassManager;
+class DynamicShadowRenderPassManager;
+
 
 // Global macro
 #define GFX GFXDevice::get()
@@ -744,6 +753,12 @@ protected:
    /// it must be updated on the next draw/clear.
    bool mViewportDirty;
 
+
+public: 
+	// 
+	virtual GFXRenderPassImpl* makeRenderPassImpl(RenderPassManager* main);
+	virtual GFXRenderBinImpl* makeRenderBinImpl(RenderBinManager* main);
+
 public:
 
    /// @name Texture functions
@@ -916,9 +931,11 @@ public:
    /// Allocate a fence. The API specific implementation of GFXDevice is responsible
    /// to make sure that the proper type is used. GFXGeneralFence should work in
    /// all cases. 
-   virtual GFXFence *createFence() = 0;
+//   virtual GFXFence *createFence() = 0;
+	virtual void createFences(U32 mNumFences) = 0;
+	virtual void waitForFences() = 0;
 
-   /// Returns a hardware occlusion query object or NULL
+	/// Returns a hardware occlusion query object or NULL
    /// if this device does not support them.   
    virtual GFXOcclusionQuery* createOcclusionQuery() { return NULL; }
    

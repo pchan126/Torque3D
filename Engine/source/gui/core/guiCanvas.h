@@ -186,7 +186,7 @@ protected:
    void handlePaintEvent (WindowId did);
 
    PlatformWindow *mPlatformWindow;
-   GFXFence **mFences;
+
    S32 mNextFenceIdx;
    S32 mNumFences;
 

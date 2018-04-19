@@ -33,6 +33,8 @@
 #include "core/strings/stringFunctions.h"
 #endif
 
+#include <vector>
+
 /// @defgroup stream_overload Primitive Type Stream Operation Overloads
 /// These macros declare the read and write functions for all primitive types.
 /// @{
@@ -100,6 +102,7 @@ protected:
    virtual void _write(const String & str);
    virtual void _read(String * str);
 
+	virtual void _read(std::vector<char> &str);
 
 public:
      /// Checks to see if this stream has the capability of a given function
@@ -151,6 +154,8 @@ public:
    // read/write real strings
    void write(const String & str) { _write(str); }
    void read(String * str) { _read(str); }
+
+   void read(std::vector<char> &str) { _read(str); }
 
    /// Write an integral color to the stream.
    bool write(const ColorI&);

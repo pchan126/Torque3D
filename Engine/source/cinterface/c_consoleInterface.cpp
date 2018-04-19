@@ -47,7 +47,7 @@ extern "C" {
    {
       const AbstractClassRep::FieldList &fl = so->getFieldList();
       outNumFields = fl.size();
-      return fl.address();
+      return fl.data();
    }
 
    bool SimObject_IsLocked(SimObject *so)

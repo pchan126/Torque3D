@@ -28,13 +28,15 @@ VkBlendFactor GFXVulkanBlend[GFXBlend_COUNT];
 VkBlendOp GFXVulkanBlendOp[GFXBlendOp_COUNT];
 VkSamplerAddressMode GFXVulkanSamplerState[GFXSAMP_COUNT];
 VkFilter GFXVulkanTextureFilter[GFXTextureFilter_COUNT];
-VkFilter GFXVulkanTextureAddress[GFXAddress_COUNT];
+VkSamplerMipmapMode GFXVulkanMipmapFilter[GFXTextureFilter_COUNT];
+VkSamplerAddressMode GFXVulkanTextureAddress[GFXAddress_COUNT];
 VkCompareOp GFXVulkanCmpFunc[GFXCmp_COUNT];
 VkStencilOp GFXVulkanStencilOp[GFXStencilOp_COUNT];
 VkFormat GFXVulkanTextureInternalFormat[GFXFormat_COUNT];
 VkFormat  GFXVulkanTextureFormat[GFXFormat_COUNT];
 VkFormat GFXVulkanTextureType[GFXFormat_COUNT];
 VkComponentSwizzle GFXVulkanTextureSwizzle[GFXFormat_COUNT];
+Map<String, GFXShaderConstDesc> GFXVulkanShaderConstDesc;
 //Vulkanenum GFXVulkanBufferType[GFXBufferType_COUNT];
 //Vulkanenum GFXVulkanCullMode[GFXCull_COUNT];
 //Vulkanenum GFXVulkanFillMode[GFXFill_COUNT];
@@ -100,12 +102,16 @@ void GFXVulkanEnumTranslate::init()
    GFXVulkanTextureFilter[GFXTextureFilterPyramidalQuad] = VK_FILTER_LINEAR; 
    GFXVulkanTextureFilter[GFXTextureFilterGaussianQuad] = VK_FILTER_LINEAR;
 
-   /*GFXVulkanTextureAddress[GFXAddressWrap] = Vulkan_REPEAT;
-   GFXVulkanTextureAddress[GFXAddressMirror] = Vulkan_REPEAT;
-   GFXVulkanTextureAddress[GFXAddressClamp] = Vulkan_CLAMP_TO_EDGE;
-   GFXVulkanTextureAddress[GFXAddressBorder] = Vulkan_REPEAT;
-   GFXVulkanTextureAddress[GFXAddressMirrorOnce] = Vulkan_REPEAT;
-   */
+   GFXVulkanMipmapFilter[GFXTextureFilterNone] = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+   GFXVulkanMipmapFilter[GFXTextureFilterPoint] = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+   GFXVulkanMipmapFilter[GFXTextureFilterLinear] = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+
+   GFXVulkanTextureAddress[GFXAddressWrap] = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+   GFXVulkanTextureAddress[GFXAddressMirror] = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT;
+   GFXVulkanTextureAddress[GFXAddressClamp] = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+   GFXVulkanTextureAddress[GFXAddressBorder] = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+   GFXVulkanTextureAddress[GFXAddressMirrorOnce] = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE;
+   
    // Stencil ops
    GFXVulkanStencilOp[GFXStencilOpKeep] = VK_STENCIL_OP_KEEP;
    GFXVulkanStencilOp[GFXStencilOpZero] = VK_STENCIL_OP_ZERO;
@@ -215,51 +221,33 @@ void GFXVulkanEnumTranslate::init()
    //GFXVulkanTextureSwizzle[GFXFormatL8] = Swizzle_GFXFormatL; // old Vulkan_LUMINANCE8
    //GFXVulkanTextureSwizzle[GFXFormatL16] = Swizzle_GFXFormatL; // old Vulkan_LUMINANCE16
 
-   //GFXVulkanTextureInternalFormat[GFXFormatR32F] = Vulkan_R32F;
-   //GFXVulkanTextureFormat[GFXFormatR32F] = Vulkan_RED;
-   //GFXVulkanTextureType[GFXFormatR32F] = Vulkan_FLOAT;
+   GFXVulkanTextureInternalFormat[GFXFormatR32F] = VK_FORMAT_R32_SFLOAT;
+   GFXVulkanTextureFormat[GFXFormatR32F] = VK_FORMAT_R32_SFLOAT;
+   GFXVulkanTextureType[GFXFormatR32F] = VK_FORMAT_R32_SFLOAT;
 
-   //GFXVulkanTextureInternalFormat[GFXFormatR32G32B32A32F] = Vulkan_RGBA32F_ARB;
-   //GFXVulkanTextureFormat[GFXFormatR32G32B32A32F] = Vulkan_RGBA;
-   //GFXVulkanTextureType[GFXFormatR32G32B32A32F] = Vulkan_FLOAT;
+   GFXVulkanTextureInternalFormat[GFXFormatR32G32B32A32F] = VK_FORMAT_R32G32B32A32_SFLOAT;
+   GFXVulkanTextureFormat[GFXFormatR32G32B32A32F] = VK_FORMAT_R32G32B32A32_SFLOAT;
+   GFXVulkanTextureType[GFXFormatR32G32B32A32F] = VK_FORMAT_R32G32B32A32_SFLOAT;
 
-   //GFXVulkanTextureInternalFormat[GFXFormatR16F] = Vulkan_R16F;
-   //GFXVulkanTextureFormat[GFXFormatR16F] = Vulkan_RED;
-   //GFXVulkanTextureType[GFXFormatR16F] = Vulkan_HALF_FLOAT_ARB;
+   GFXVulkanTextureInternalFormat[GFXFormatR16F] = VK_FORMAT_R16_SFLOAT;
+   GFXVulkanTextureFormat[GFXFormatR16F] = VK_FORMAT_R16_SFLOAT;
+   GFXVulkanTextureType[GFXFormatR16F] = VK_FORMAT_R16_SFLOAT;
 
-   //GFXVulkanTextureInternalFormat[GFXFormatR16G16F] = Vulkan_RG16F;
-   //GFXVulkanTextureFormat[GFXFormatR16G16F] = Vulkan_RG;
-   //GFXVulkanTextureType[GFXFormatR16G16F] = Vulkan_HALF_FLOAT_ARB;
+   GFXVulkanTextureInternalFormat[GFXFormatR16G16F] = VK_FORMAT_R16G16_SFLOAT;
+   GFXVulkanTextureFormat[GFXFormatR16G16F] = VK_FORMAT_R16G16_SFLOAT;
+   GFXVulkanTextureType[GFXFormatR16G16F] = VK_FORMAT_R16G16_SFLOAT;
 
-   //GFXVulkanTextureInternalFormat[GFXFormatR16G16B16A16F] = Vulkan_RGBA16F_ARB;
-   //GFXVulkanTextureFormat[GFXFormatR16G16B16A16F] = Vulkan_RGBA;
-   //GFXVulkanTextureType[GFXFormatR16G16B16A16F] = Vulkan_HALF_FLOAT_ARB;
+   GFXVulkanTextureInternalFormat[GFXFormatR16G16B16A16F] = VK_FORMAT_R16G16B16A16_SFLOAT;
+   GFXVulkanTextureFormat[GFXFormatR16G16B16A16F] = VK_FORMAT_R16G16B16A16_SFLOAT;
+   GFXVulkanTextureType[GFXFormatR16G16B16A16F] = VK_FORMAT_R16G16B16A16_SFLOAT;
 
-   //if( gvulkanHasExtension(ARB_ES2_compatibility) )
-   //{
-   //   GFXVulkanTextureInternalFormat[GFXFormatR5G6B5] = Vulkan_RGB5_A1;
-   //   GFXVulkanTextureFormat[GFXFormatR5G6B5] = Vulkan_RGBA;
-   //   GFXVulkanTextureType[GFXFormatR5G6B5] = Vulkan_UNSIGNED_SHORT_5_5_5_1;
-   //}
-   //else
-   //{
-   //   GFXVulkanTextureInternalFormat[GFXFormatR5G6B5] = Vulkan_RGB565;
-   //   GFXVulkanTextureFormat[GFXFormatR5G6B5] = Vulkan_RGB;
-   //   GFXVulkanTextureType[GFXFormatR5G6B5] = Vulkan_UNSIGNED_SHORT_5_6_5;
-   //}
+   GFXVulkanTextureInternalFormat[GFXFormatR5G6B5] = VK_FORMAT_R5G5B5A1_UNORM_PACK16;
+   GFXVulkanTextureFormat[GFXFormatR5G6B5] = VK_FORMAT_R5G5B5A1_UNORM_PACK16;
+   GFXVulkanTextureType[GFXFormatR5G6B5] = VK_FORMAT_R5G5B5A1_UNORM_PACK16;
 
-   //if( gvulkanHasExtension(ARB_texture_rg) )
-   //{
-   //   GFXVulkanTextureInternalFormat[GFXFormatR16G16] = Vulkan_RG16;
-   //   GFXVulkanTextureFormat[GFXFormatR16G16] = Vulkan_RG;
-   //   GFXVulkanTextureType[GFXFormatR16G16] = Vulkan_UNSIGNED_SHORT;
-   //}
-   //else
-   //{
-   //   GFXVulkanTextureInternalFormat[GFXFormatR16G16] = Vulkan_RGBA16;
-   //   GFXVulkanTextureFormat[GFXFormatR16G16] = Vulkan_RGBA;
-   //   GFXVulkanTextureType[GFXFormatR16G16] = Vulkan_UNSIGNED_SHORT;
-   //}
+   GFXVulkanTextureInternalFormat[GFXFormatR16G16] = VK_FORMAT_R16G16_UINT;
+   GFXVulkanTextureFormat[GFXFormatR16G16] = VK_FORMAT_R16G16_UINT;
+   GFXVulkanTextureType[GFXFormatR16G16] = VK_FORMAT_R16G16_UINT;
 
    //// Cull - Openvulkan render upside down need to invert cull
    //GFXVulkanCullMode[GFXCullNone] = VK_CULL_MODE_FRONT_BIT;
@@ -270,4 +258,24 @@ void GFXVulkanEnumTranslate::init()
    //GFXVulkanFillMode[GFXFillPoint] = Vulkan_POINT;
    //GFXVulkanFillMode[GFXFillWireframe] = Vulkan_LINE;
    //GFXVulkanFillMode[GFXFillSolid] = Vulkan_FILL;
+
+	GFXVulkanShaderConstDesc["$modelViewProj"] = GFXShaderConstDesc("$modelViewProj", GFXSCT_Float4x4, 1);
+	GFXVulkanShaderConstDesc["$fsModelViewProj"] = GFXShaderConstDesc("$fsModelViewProj", GFXSCT_Float4x4, 1);
+	GFXVulkanShaderConstDesc["$modelview"] = GFXShaderConstDesc("$modelview", GFXSCT_Float4x4, 1);
+	GFXVulkanShaderConstDesc["$oneOverFar"] = GFXShaderConstDesc("$oneOverFar", GFXSCT_Float, 1);
+	GFXVulkanShaderConstDesc["$oneOverSoftness"] = GFXShaderConstDesc("$oneOverSoftness", GFXSCT_Float, 1);
+	GFXVulkanShaderConstDesc["$deferredTargetParams"] = GFXShaderConstDesc("$deferredTargetParams", GFXSCT_Float4, 1);
+	GFXVulkanShaderConstDesc["$alphaFactor"] = GFXShaderConstDesc("$alphaFactor", GFXSCT_Float, 1);
+	GFXVulkanShaderConstDesc["$alphaScale"] = GFXShaderConstDesc("$alphaScale", GFXSCT_Float, 1);
+
+	GFXVulkanShaderConstDesc["$screenRect"] = GFXShaderConstDesc("$screenRect", GFXSCT_Float4, 1);
+	GFXVulkanShaderConstDesc["$edgeTargetParams"] = GFXShaderConstDesc("$edgeTargetParams", GFXSCT_Float4, 1);
+	GFXVulkanShaderConstDesc["$edgeSource"] = GFXShaderConstDesc("$edgeSource", GFXSCT_Sampler, 1);
+	GFXVulkanShaderConstDesc["$colorSource"] = GFXShaderConstDesc("$colorSource", GFXSCT_Sampler, 1);
+	GFXVulkanShaderConstDesc["$offscreenTargetParams"] = GFXShaderConstDesc("$offscreenTargetParams", GFXSCT_Float4, 1);
+	
+	GFXVulkanShaderConstDesc["$diffuseMap"] = GFXShaderConstDesc("$diffuseMap", GFXSCT_Sampler, 1);
+	GFXVulkanShaderConstDesc["$deferredTex"] = GFXShaderConstDesc("$deferredTex", GFXSCT_Sampler, 1);
+	GFXVulkanShaderConstDesc["$paraboloidLightMap"] = GFXShaderConstDesc("$paraboloidLightMap", GFXSCT_Sampler, 1);
+	
 }

@@ -40,12 +40,12 @@ public:
    virtual void initStatic( GFXTexHandle *faces );
    virtual void initStatic( DDSFile *dds );
    virtual void initDynamic( U32 texSize, GFXFormat faceFormat = GFXFormatR8G8B8A8 );
-   virtual U32 getSize() const { return mWidth; }
+   virtual U32 getSize() const { return size; }
    virtual GFXFormat getFormat() const { return mFaceFormat; }
 
    // Convenience methods for GFXVulkanTextureTarget
-   U32 getWidth() { return mWidth; }
-   U32 getHeight() { return mHeight; }
+   U32 getWidth() { return size; }
+   U32 getHeight() { return size; }
    U32 getHandle() { return mCubemap; }
    
    // GFXResource interface
@@ -66,15 +66,17 @@ protected:
    /// @see GFXTextureManager::addEventDelegate
    void _onTextureEvent( GFXTexCallbackCode code );
    
-   U32 mCubemap = 0; ///< Internal Vulkan handle
+   VkImage mCubemap; ///< Internal Vulkan handle
    U32 mDynamicTexSize; ///< Size of faces for a dynamic texture (used in resurrect)
    
    // Self explanatory
-   U32 mWidth;
-   U32 mHeight;
+   U32 size; // must be square
+
+   VkImageUsageFlags usage;
+
    GFXFormat mFaceFormat;
       
-   GFXTexHandle mTextures[6]; ///< Keep refs to our textures for resurrection of static cubemaps
+   GFXTexHandle mTexture; ///< single 6 layer texture
    
    /// The backing DDSFile uses to restore the faces
    /// when the surface is lost.
@@ -83,7 +85,7 @@ protected:
    // should only be called by GFXDevice
    virtual void setToTexUnit( U32 tuNum ); ///< Binds the cubemap to the given texture unit
    virtual void bind(U32 textureUnit) const; ///< Notifies our owning device that we want to be set to the given texture unit (used for Vulkan internal state tracking)
-   void fillCubeTextures(GFXTexHandle* faces); ///< Copies the textures in faces into the cubemap
+   void fillCubeTextures(GFXTexHandle faces); ///< Copies the textures in faces into the cubemap
    
    //static Vulkanenum faceList[6]; ///< Lookup table
 };

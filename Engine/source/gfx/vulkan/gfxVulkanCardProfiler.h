@@ -30,6 +30,7 @@ class GFXVulkanCardProfiler : public GFXCardProfiler
 {
 public:
    void init();
+   	VkPhysicalDevice getPhysicalDevice() const { return physicalDevice; };
 
 protected:
    virtual const String& getRendererString() const override { return mRendererString; }
@@ -41,6 +42,9 @@ private:
    String mRendererString;
    typedef GFXCardProfiler Parent;
    VkPhysicalDeviceProperties physicalProperties;
+	bool checkSwapChainSupport();
+
+	VkPhysicalDevice physicalDevice;
 };
 
 #endif

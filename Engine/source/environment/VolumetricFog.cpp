@@ -509,8 +509,8 @@ bool VolumetricFog::UpdateBuffers(U32 dl, bool force)
       U16 *ibIndices = NULL;
       GFXPrimitive *piInput = NULL;
       mPB.lock(&ibIndices, &piInput);
-      dCopyArray(ibIndices, det_size[dl].indices->address(), det_size[dl].indices->size());
-      dMemcpy(piInput, det_size[dl].piArray->address(), det_size[dl].piArray->size() * sizeof(GFXPrimitive));
+      dCopyArray(ibIndices, det_size[dl].indices->data(), det_size[dl].indices->size());
+      dMemcpy(piInput, det_size[dl].piArray->data(), det_size[dl].piArray->size() * sizeof(GFXPrimitive));
       mPB.unlock();
       mIsPBDirty = false;
    }

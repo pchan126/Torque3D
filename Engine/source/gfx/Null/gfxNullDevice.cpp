@@ -293,7 +293,45 @@ GFXPrimitiveBuffer *GFXNullDevice::allocPrimitiveBuffer( U32 numIndices,
 GFXCubemap* GFXNullDevice::createCubemap()
 { 
    return new GFXNullCubemap(); 
-};
+}
+void GFXNullDevice::createFences(U32 numFences )
+{
+	mNumFences = numFences;
+   // Destroy old fences
+   SAFE_DELETE_ARRAY( mFences );
+
+   // Now create the new ones
+   if( mNumFences > 0 )
+   {
+      mFences = new GFXFence*[mNumFences];
+
+      // Allocate the new fences
+      for( S32 i = 0; i < mNumFences; i++ )
+         mFences[i] = new GFXGeneralFence( this );
+   }
+
+   // Reset state
+   mNextFenceIdx = 0;
+}
+
+void GFXNullDevice::waitForFences()
+{
+   if( mNumFences > 0 )
+   {
+      // Issue next fence
+      mFences[mNextFenceIdx]->issue();
+
+      mNextFenceIdx++;
+      
+      // Wrap the next fence around to first if we're maxxed
+      if( mNextFenceIdx >= mNumFences )
+         mNextFenceIdx = 0;
+
+      // Block on previous fence
+      mFences[mNextFenceIdx]->block();
+   }
+}
+
 
 void GFXNullDevice::enumerateAdapters( Vector<GFXAdapter*> &adapterList )
 {

@@ -95,7 +95,7 @@ void afxResidueMgr::ResidueList::clear()
 
 void afxResidueMgr::ResidueList::sort()
 {
-  dQsort(m_array->address(), m_array->size(), sizeof(Residue*), compare_residue);
+  dQsort(m_array->data(), m_array->size(), sizeof(Residue*), compare_residue);
   m_dirty = false;
 }
 

@@ -36,7 +36,8 @@ extern VkBlendFactor GFXVulkanBlend[GFXBlend_COUNT];
 extern VkBlendOp GFXVulkanBlendOp[GFXBlendOp_COUNT];
 extern VkSamplerAddressMode GFXVulkanSamplerState[GFXSAMP_COUNT];
 extern VkFilter GFXVulkanTextureFilter[GFXTextureFilter_COUNT];
-extern VkFilter GFXVulkanTextureAddress[GFXAddress_COUNT];
+extern VkSamplerMipmapMode GFXVulkanMipmapFilter[GFXTextureFilter_COUNT];
+extern VkSamplerAddressMode GFXVulkanTextureAddress[GFXAddress_COUNT];
 extern VkCompareOp GFXVulkanCmpFunc[GFXCmp_COUNT];
 extern VkStencilOp GFXVulkanStencilOp[GFXStencilOp_COUNT];
 
@@ -44,6 +45,7 @@ extern VkFormat GFXVulkanTextureInternalFormat[GFXFormat_COUNT];
 extern VkFormat  GFXVulkanTextureFormat[GFXFormat_COUNT];
 extern VkFormat GFXVulkanTextureType[GFXFormat_COUNT];
 extern VkComponentSwizzle GFXVulkanTextureSwizzle[GFXFormat_COUNT];
+extern Map<String, GFXShaderConstDesc> GFXVulkanShaderConstDesc;
 
 //extern Vulkanenum GFXVulkanBufferType[GFXBufferType_COUNT];
 //extern Vulkanenum GFXVulkanCullMode[GFXCull_COUNT];

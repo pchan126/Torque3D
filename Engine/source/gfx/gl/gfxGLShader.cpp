@@ -1038,7 +1038,7 @@ bool GFXGLShader::_loadShaderFromStream(  GLuint shader,
    buffers.push_back(buffer);
    lengths.push_back(shaderLen);
    
-   glShaderSource(shader, buffers.size(), (const GLchar**)const_cast<const char**>(buffers.address()), NULL);
+   glShaderSource(shader, buffers.size(), (const GLchar**)const_cast<const char**>(buffers.data()), NULL);
 
 #if defined(TORQUE_DEBUG) && defined(TORQUE_DEBUG_GFX)
    FileStream stream;

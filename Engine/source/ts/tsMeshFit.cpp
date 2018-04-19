@@ -292,7 +292,7 @@ void MeshFit::addSourceMesh( const TSShape::Object& obj, const TSMesh* mesh )
    {
       count = mesh->verts.size();
       stride = sizeof(Point3F);
-      pVert = (U8*)mesh->verts.address();
+      pVert = (U8*)mesh->verts.data();
    }
 
    MatrixF objMat;
@@ -437,7 +437,7 @@ void MeshFit::addBox( const Point3F& sides, const MatrixF& mat )
 void MeshFit::fitOBB()
 {
    PrimFit primFitter;
-   primFitter.fitBox( mVerts.size(), (F32*)mVerts.address() );
+   primFitter.fitBox( mVerts.size(), (F32*)mVerts.data() );
    addBox( primFitter.mBoxSides, primFitter.mBoxTransform );
 }
 
@@ -468,7 +468,7 @@ void MeshFit::addSphere( F32 radius, const Point3F& center )
 void MeshFit::fitSphere()
 {
    PrimFit primFitter;
-   primFitter.fitSphere( mVerts.size(), (F32*)mVerts.address() );
+   primFitter.fitSphere( mVerts.size(), (F32*)mVerts.data() );
    addSphere( primFitter.mSphereRadius, primFitter.mSphereCenter );
 }
 
@@ -500,7 +500,7 @@ void MeshFit::addCapsule( F32 radius, F32 height, const MatrixF& mat )
 void MeshFit::fitCapsule()
 {
    PrimFit primFitter;
-   primFitter.fitCapsule( mVerts.size(), (F32*)mVerts.address() );
+   primFitter.fitCapsule( mVerts.size(), (F32*)mVerts.data() );
    addCapsule( primFitter.mCapRadius, primFitter.mCapHeight, primFitter.mCapTransform );
 }
 
@@ -512,8 +512,8 @@ void MeshFit::fit10_DOP_X()
 {
    Vector<Point3F> planes;
    planes.setSize( 10 );
-   dCopyArray( planes.address(), sFacePlanes, 6 );
-   dCopyArray( planes.address()+6, sXEdgePlanes, 4 );
+   dCopyArray( planes.data(), sFacePlanes, 6 );
+   dCopyArray( planes.data()+6, sXEdgePlanes, 4 );
    fitK_DOP( planes );
 }
 
@@ -522,8 +522,8 @@ void MeshFit::fit10_DOP_Y()
 {
    Vector<Point3F> planes;
    planes.setSize( 10 );
-   dCopyArray( planes.address(), sFacePlanes, 6 );
-   dCopyArray( planes.address()+6, sYEdgePlanes, 4 );
+   dCopyArray( planes.data(), sFacePlanes, 6 );
+   dCopyArray( planes.data()+6, sYEdgePlanes, 4 );
    fitK_DOP( planes );
 }
 
@@ -532,8 +532,8 @@ void MeshFit::fit10_DOP_Z()
 {
    Vector<Point3F> planes;
    planes.setSize( 10 );
-   dCopyArray( planes.address(), sFacePlanes, 6 );
-   dCopyArray( planes.address()+6, sZEdgePlanes, 4 );
+   dCopyArray( planes.data(), sFacePlanes, 6 );
+   dCopyArray( planes.data()+6, sZEdgePlanes, 4 );
    fitK_DOP( planes );
 }
 
@@ -542,10 +542,10 @@ void MeshFit::fit18_DOP()
 {
    Vector<Point3F> planes;
    planes.setSize( 18 );
-   dCopyArray( planes.address(), sFacePlanes, 6 );
-   dCopyArray( planes.address()+6, sXEdgePlanes, 4 );
-   dCopyArray( planes.address()+10, sYEdgePlanes, 4 );
-   dCopyArray( planes.address()+14, sZEdgePlanes, 4 );
+   dCopyArray( planes.data(), sFacePlanes, 6 );
+   dCopyArray( planes.data()+6, sXEdgePlanes, 4 );
+   dCopyArray( planes.data()+10, sYEdgePlanes, 4 );
+   dCopyArray( planes.data()+14, sZEdgePlanes, 4 );
    fitK_DOP( planes );
 }
 
@@ -554,11 +554,11 @@ void MeshFit::fit26_DOP()
 {
    Vector<Point3F> planes;
    planes.setSize( 26 );
-   dCopyArray( planes.address(), sFacePlanes, 6 );
-   dCopyArray( planes.address()+6, sXEdgePlanes, 4 );
-   dCopyArray( planes.address()+10, sYEdgePlanes, 4 );
-   dCopyArray( planes.address()+14, sZEdgePlanes, 4 );
-   dCopyArray( planes.address()+18, sCornerPlanes, 8 );
+   dCopyArray( planes.data(), sFacePlanes, 6 );
+   dCopyArray( planes.data()+6, sXEdgePlanes, 4 );
+   dCopyArray( planes.data()+10, sYEdgePlanes, 4 );
+   dCopyArray( planes.data()+14, sZEdgePlanes, 4 );
+   dCopyArray( planes.data()+18, sCornerPlanes, 8 );
    fitK_DOP( planes );
 }
 
@@ -608,7 +608,7 @@ void MeshFit::fitK_DOP( const Vector<Point3F>& planes )
    // Create a convex hull from the point set
    CONVEX_DECOMPOSITION::HullDesc hd;
    hd.mVcount 			= points.size();
-   hd.mVertices 		= (F32*)points.address();
+   hd.mVertices 		= (F32*)points.data();
    hd.mVertexStride 	= sizeof(Point3F);
    hd.mMaxVertices 	= 64;
    hd.mSkinWidth		= 0.0f;

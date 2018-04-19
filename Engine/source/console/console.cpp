@@ -412,7 +412,7 @@ bool isMainThread()
 void getLockLog(ConsoleLogEntry *&log, U32 &size)
 {
    consoleLogLocked = true;
-   log = consoleLog.address();
+   log = consoleLog.data();
    size = consoleLog.size();
 }
 

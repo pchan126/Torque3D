@@ -766,6 +766,41 @@ GFXFence * GFXGLDevice::createFence()
    return fence;
 }
 
+void GFXGLDevice::createFences(U32 numFences)
+{
+	mNumFences = numFences;
+   // Destroy old fences
+   SAFE_DELETE_ARRAY( mFences );
+
+   // Now create the new ones
+   if( mNumFences > 0 )
+   {
+      mFences = new GFXFence*[mNumFences];
+
+      // Allocate the new fences
+      for( S32 i = 0; i < mNumFences; i++ )
+         mFences[i] = createFence();
+   }
+}
+
+void GFXGLDevice::waitForFences()
+{
+   if( mNumFences > 0 )
+   {
+      // Issue next fence
+      mFences[mNextFenceIdx]->issue();
+
+      mNextFenceIdx++;
+      
+      // Wrap the next fence around to first if we're maxxed
+      if( mNextFenceIdx >= mNumFences )
+         mNextFenceIdx = 0;
+
+      // Block on previous fence
+      mFences[mNextFenceIdx]->block();
+   }
+}
+
 GFXOcclusionQuery* GFXGLDevice::createOcclusionQuery()
 {   
    GFXOcclusionQuery *query = new GFXGLOcclusionQuery( this );

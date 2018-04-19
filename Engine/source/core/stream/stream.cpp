@@ -260,6 +260,13 @@ void Stream::_read(String * str)
    *str = String(buffer,len);
 }
 
+void Stream::_read(std::vector<char>& str)
+{
+   U16 len = getStreamSize();
+   str.resize(len);
+   read(len, str.data());
+}
+
 
 bool Stream::write(const ColorI& rColor)
 {

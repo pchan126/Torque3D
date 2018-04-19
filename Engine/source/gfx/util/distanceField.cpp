@@ -163,7 +163,7 @@ void GFXUtil::DistanceField::makeDistanceField( const U8 * sourceData, S32 sourc
          }
       }
    }
-   dQsort(searchSpace.address(), searchSpace.size(), sizeof(DistanceFieldSearchSpaceStruct), cmpSortDistanceFieldSearchSpaceStruct);
+   dQsort(searchSpace.data(), searchSpace.size(), sizeof(DistanceFieldSearchSpaceStruct), cmpSortDistanceFieldSearchSpaceStruct);
 
    for(S32 y = 0; y < targetSizeY; y++)
    {

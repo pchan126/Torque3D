@@ -138,7 +138,7 @@ bool GuiScrollCtrl::onWake()
    mTextureObject = mProfile->mTextureObject;
    if (mTextureObject && (mProfile->constructBitmapArray() >= BmpStates * BmpCount))
    {
-      mBitmapBounds = mProfile->mBitmapArrayRects.address();
+      mBitmapBounds = mProfile->mBitmapArrayRects.data();
 
       //init
       mBaseThumbSize = mBitmapBounds[BmpStates * BmpVThumbTopCap].extent.y +

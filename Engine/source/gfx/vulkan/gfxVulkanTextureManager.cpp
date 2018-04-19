@@ -58,8 +58,9 @@ GFXTextureObject *GFXVulkanTextureManager::_createTextureObject(   U32 height,
                                                                GFXTextureObject *inTex )
 {
    AssertFatal(format >= 0 && format < GFXFormat_COUNT, "GFXVulkanTextureManager::_createTexture - invalid format!");
-
-   GFXVulkanTextureObject *retTex;
+	if (numMipLevels == 0) numMipLevels++;
+   
+	GFXVulkanTextureObject *retTex;
    if ( inTex )
    {
       AssertFatal( dynamic_cast<GFXVulkanTextureObject*>( inTex ), "GFXVulkanTextureManager::_createTexture() - Bad inTex type!" );
@@ -106,14 +107,56 @@ void GFXVulkanTextureManager::innerCreateTexture( GFXVulkanTextureObject *retTex
       retTex->mIsNPoT2 = true;
    retTex->mBinding = binding;
    
+//	VkImage image;
+//	VkSampleCountFlagBits samples = static_cast<VkSampleCountFlagBits>(pDL->getBytesPerPixel()*8);
+	VkSampleCountFlagBits samples = VK_SAMPLE_COUNT_1_BIT;
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+
+	if (!GFXVulkan->createImage(VK_IMAGE_TYPE_2D, GFXVulkanTextureFormat[format], {width, height, 1}, numMipLevels, 1, samples, usage, false, retTex->image))
+		return; 
+
+    if(retTex->getBinding() == VK_IMAGE_TYPE_3D)
+      return;
+	
+	VkDeviceMemory memory_object;
+	if (!GFXVulkan->allocateAndBindMemoryObjectToImage(retTex->image, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object))
+		return;
+
+	VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+	//VkImageView image_view;
+	if (!GFXVulkan->createImageView(retTex->image, VK_IMAGE_VIEW_TYPE_2D, GFXVulkanTextureFormat[format], aspect, retTex->image_view))
+		return;
+
+	//retTex->image = image;
+	//retTex->image_view = image_view;
 }
 
 //-----------------------------------------------------------------------------
 // loadTexture - GBitmap
 //-----------------------------------------------------------------------------
 
-static void _textureUpload(const S32 width, const S32 height,const S32 bytesPerPixel,const GFXVulkanTextureObject* texture, const GFXFormat fmt, const U8* data,const S32 mip=0, Swizzle<U8, 4> *pSwizzle = NULL)
+void GFXVulkanTextureManager::_textureUpload(const U32 width, const U32 height, const U32 bytesPerPixel,
+                           const GFXVulkanTextureObject* texture, const GFXFormat fmt, const U8* pixels,
+                           const U32 mip, Swizzle<U8, 4>* pSwizzle)
 {
+	auto logical_device = GFXVulkan->getLogicalDevice();
+	U32 bufSize = width * height * bytesPerPixel;
+
+    VkBuffer stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+
+	GFXVulkan->createBuffer(bufSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, stagingBuffer);
+	GFXVulkan->allocateAndBindMemoryObjectForBuffer(stagingBuffer, stagingBufferMemory, VkMemoryPropertyFlagBits(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT));
+	
+	void* data;
+    vkMapMemory(GFXVulkan->getLogicalDevice(), stagingBufferMemory, 0, bufSize, 0, &data);
+        memcpy(data, pixels, static_cast<size_t>(bufSize));
+    vkUnmapMemory(GFXVulkan->getLogicalDevice(), stagingBufferMemory);
+
+	texture->transitionImageLayout(VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+	GFXVulkan->copyBufferToImage(stagingBuffer, texture->image, width, height);
+
+	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
    //vulkanBindBuffer(Vulkan_PIXEL_UNPACK_BUFFER, texture->getBuffer());
    //U32 bufSize = width * height * bytesPerPixel;
    //vulkanBufferData(Vulkan_PIXEL_UNPACK_BUFFER, bufSize, NULL, Vulkan_STREAM_DRAW);
@@ -143,24 +186,30 @@ static void _textureUpload(const S32 width, const S32 height,const S32 bytesPerP
 bool GFXVulkanTextureManager::_loadTexture(GFXTextureObject *aTexture, GBitmap *pDL)
 {
    PROFILE_SCOPE(GFXVulkanTextureManager_loadTexture);
-   GFXVulkanTextureObject *texture = static_cast<GFXVulkanTextureObject*>(aTexture);
-   
-   AssertFatal(texture->getBinding() == VK_IMAGE_TYPE_1D || texture->getBinding() == VK_IMAGE_TYPE_2D, 
-      "GFXVulkanTextureManager::_loadTexture(GBitmap) - This method can only be used with 1D/2D textures");
-      
-   if(texture->getBinding() == VK_IMAGE_TYPE_3D)
-      return false;
-         
-   // No 24bit formats.
+	auto logical_device = dynamic_cast<GFXVulkanDevice*>(GFXDevice::get())->getLogicalDevice();
+    GFXVulkanTextureObject *texture = dynamic_cast<GFXVulkanTextureObject*>(aTexture);
+
+	// No 24bit formats.
    if(pDL->getFormat() == GFXFormatR8G8B8)
       pDL->setFormat(GFXFormatR8G8B8A8);
    else if (pDL->getFormat() == GFXFormatR8G8B8_SRGB)
       pDL->setFormat(GFXFormatR8G8B8A8_SRGB);
-   // Bind to edit
+	
+	VkFormatProperties format_properties;
+	vkGetPhysicalDeviceFormatProperties(GFXVulkan->getPhysicalDevice(), GFXVulkanTextureFormat[pDL->getFormat()], &format_properties);
+	if (!(format_properties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT))
+	{
+		Con::errorf("Provided format is not supported for a sampled image.");
+		return false;
+	}
+
+	_textureUpload(pDL->getWidth(),pDL->getHeight(),pDL->getBytesPerPixel(),texture,pDL->getFormat(), pDL->getBits());
+	
+	// Bind to edit
   // PRESERVE_TEXTURE(texture->getBinding());
   // vulkanBindTexture(texture->getBinding(), texture->getHandle());
 
-  _textureUpload(pDL->getWidth(),pDL->getHeight(),pDL->getBytesPerPixel(),texture,pDL->getFormat(), pDL->getBits(), 0);
+//  _textureUpload(pDL->getWidth(),pDL->getHeight(),pDL->getBytesPerPixel(),texture,pDL->getFormat(), pDL->getBits(), 0);
 
   //if(!ImageUtil::isCompressedFormat(pDL->getFormat()))
   // vulkanGenerateMipmap(texture->getBinding());

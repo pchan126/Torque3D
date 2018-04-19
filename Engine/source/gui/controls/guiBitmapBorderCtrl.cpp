@@ -113,7 +113,7 @@ bool GuiBitmapBorderCtrl::onWake()
    mBitmapBounds = NULL;
    mTextureObject = mProfile->mTextureObject;
    if( mProfile->constructBitmapArray() >= NumBitmaps )
-      mBitmapBounds = mProfile->mBitmapArrayRects.address();
+      mBitmapBounds = mProfile->mBitmapArrayRects.data();
    else
       Con::errorf( "GuiBitmapBorderCtrl: Could not construct bitmap array for profile '%s'", mProfile->getName() );
       

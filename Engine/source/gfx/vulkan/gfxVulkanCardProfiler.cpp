@@ -26,7 +26,6 @@
 
 void GFXVulkanCardProfiler::init()
 {
-	VkPhysicalDevice* physical_device;
 	U32 count;
 	auto res = vkEnumeratePhysicalDevices(dynamic_cast<GFXVulkanDevice*>(GFX)->getInstance(), &count, NULL);
 	assert(res == VK_SUCCESS);
@@ -37,10 +36,13 @@ void GFXVulkanCardProfiler::init()
 
 	physicalProperties = {};
 
-	vkGetPhysicalDeviceProperties(physicalDevices[0], &physicalProperties);
+	physicalDevice = physicalDevices[0];
+	checkSwapChainSupport();
+
+	vkGetPhysicalDeviceProperties(physicalDevice, &physicalProperties);
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	vkGetPhysicalDeviceMemoryProperties(
-	    physicalDevices[0],
+	    physicalDevice,
 		&memoryProperties);
 	
 	StringBuilder in;
@@ -48,65 +50,63 @@ void GFXVulkanCardProfiler::init()
 		VK_VERSION_MAJOR(physicalProperties.apiVersion),
         VK_VERSION_MINOR(physicalProperties.apiVersion),
         VK_VERSION_PATCH(physicalProperties.apiVersion));
-    mChipSet = reinterpret_cast<const char*>(physicalProperties.deviceName);
+
+	mChipSet = reinterpret_cast<const char*>(physicalProperties.deviceName);
     mRendererString = "Vulkan";
     mCardDescription = reinterpret_cast<const char*>(physicalProperties.deviceName);
     mVersionString = reinterpret_cast<const char*>(in.data());   
     mVideoMemory = static_cast<GFXVulkanDevice*>(GFX)->getTotalVideoMemory();
 
-   Parent::init();
+	Parent::init();
 }
 
 void GFXVulkanCardProfiler::setupCardCapabilities()
 {
-//   Vulkanint maxTexSize;
-//   VulkanGetIntegerv(Vulkan_MAX_TEXTURE_SIZE, &maxTexSize);
-//   
-   // OpenVulkan doesn't have separate maximum width/height.
-   setCapability("maxTextureWidth", 1);
-   setCapability("maxTextureHeight", 1);
-   setCapability("maxTextureSize", 1);
-//
-//   // Check for anisotropic filtering support.
-//   setCapability("Vulkan_EXT_texture_filter_anisotropic", gVulkanHasExtension(EXT_texture_filter_anisotropic));
-//
-//   // Check for buffer storage
-//#ifdef TORQUE_NSIGHT_WORKAROUND
-//   setCapability("Vulkan_ARB_buffer_storage", false);
-//#else
-//   setCapability("Vulkan_ARB_buffer_storage", gVulkanHasExtension(ARB_buffer_storage));
-//#endif
-//
-//   // Check for shader model 5.0
-//   setCapability("Vulkan_ARB_gpu_shader5", gVulkanHasExtension(ARB_gpu_shader5));
-//
-//   // Check for texture storage
-//   setCapability("Vulkan_ARB_texture_storage", gVulkanHasExtension(ARB_texture_storage));
-//
-//   // Check for sampler objects
-//   setCapability("Vulkan_ARB_sampler_objects", gVulkanHasExtension(ARB_sampler_objects));
-//
-//   // Check for copy image support
-//   setCapability("Vulkan_ARB_copy_image", gVulkanHasExtension(ARB_copy_image));
-//
-//   // Check for vertex attrib binding
-//   setCapability("Vulkan_ARB_vertex_attrib_binding", gVulkanHasExtension(ARB_vertex_attrib_binding));    
-
+   setCapability("maxTextureWidth", physicalProperties.limits.maxImageDimension2D);
+   setCapability("maxTextureHeight", physicalProperties.limits.maxImageDimension2D);
+   setCapability("maxTextureSize", physicalProperties.limits.maxImageDimension2D);
 }
 
 bool GFXVulkanCardProfiler::_queryCardCap(const String& query, U32& foundResult)
 {
    // Just doing what the D3D11 layer does
-   return 0;
+   return false;
 }
 
 bool GFXVulkanCardProfiler::_queryFormat(const GFXFormat fmt, const GFXTextureProfile *profile, bool &inOutAutogenMips)
 {
-	// We assume if the format is valid that we can use it for any purpose.
-   // This may not be the case, but we have no way to check short of in depth 
-   // testing of every format for every purpose.  And by testing, I mean sitting
-   // down and doing it by hand, because there is no OpenVulkan API to check these
-   // things.
-   //return GFXVulkanTextureInternalFormat[fmt] != Vulkan_ZERO;
-	return true;
+   return GFXVulkanTextureInternalFormat[fmt] != VK_FORMAT_UNDEFINED;
 }
+
+
+bool GFXVulkanCardProfiler::checkSwapChainSupport()
+{
+	uint32_t extensionCount = 0;
+	vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, nullptr);
+
+	if (extensionCount == 0)
+	{
+		Con::errorf("physical device doesn't support any extensions");
+		//exit(1);
+		return false;
+	}
+
+	std::vector<VkExtensionProperties> deviceExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(physicalDevice, nullptr, &extensionCount, deviceExtensions.data());
+
+	for (const auto& extension : deviceExtensions)
+	{
+		if (strcmp(extension.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0)
+		{
+			Con::printf("physical device supports swap chains");
+			//std::cout << "physical device supports swap chains" << std::endl;
+			return true;
+		}
+	}
+
+	Con::errorf("physical device doesn't supports swap chains");
+	return false;
+}
+
+ 
+

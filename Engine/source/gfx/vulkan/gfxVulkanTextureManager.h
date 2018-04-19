@@ -56,6 +56,9 @@ private:
    
    /// Creates internal Vulkan texture
    void innerCreateTexture(GFXVulkanTextureObject *obj, U32 height, U32 width, U32 depth, GFXFormat format, GFXTextureProfile *profile, U32 numMipLevels, bool forceMips = false);
+	void _textureUpload(const U32 width, const U32 height, const U32 bytesPerPixel,
+                           const GFXVulkanTextureObject* texture, const GFXFormat fmt, const U8* pixels,
+                           const U32 mip = 1, Swizzle<U8, 4>* pSwizzle = NULL);
 };
 
 #endif

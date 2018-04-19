@@ -369,7 +369,7 @@ void PSSMLightShadowMap::_render(   RenderPassManager* renderPass,
       shadowRenderState.setDiffuseCameraTransform( diffuseState->getCameraTransform() );
       shadowRenderState.setWorldToScreenScale( diffuseState->getWorldToScreenScale() );
 
-      PlaneSetF planeSet( _extraCull[i].address(), _extraCull[i].size() );
+      PlaneSetF planeSet( _extraCull[i].data(), _extraCull[i].size() );
       shadowRenderState.getCullingState().setExtraPlanesCull( planeSet );
 
       U32 objectMask = SHADOW_TYPEMASK;

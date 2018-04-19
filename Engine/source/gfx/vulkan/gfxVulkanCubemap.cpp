@@ -23,21 +23,21 @@
 #include "gfx/vulkan/gfxVulkanDevice.h"
 #include "gfx/vulkan/gfxVulkanTextureObject.h"
 #include "gfx/vulkan/gfxVulkanEnumTranslate.h"
-//#include "gfx/Vulkan/gfxVulkanUtils.h"
+#include "gfx/Vulkan/gfxVulkanUtils.h"
 #include "gfx/vulkan/gfxVulkanCubemap.h"
 #include "gfx/gfxTextureManager.h"
 #include "gfx/gfxCardProfile.h"
 #include "gfx/bitmap/ddsFile.h"
 #include "gfx/bitmap/imageUtils.h"
 
+using namespace VulkanUtils;
 
 GFXVulkanCubemap::GFXVulkanCubemap() :
       mCubemap(0), 
       mDynamicTexSize(0),
       mFaceFormat( GFXFormatR8G8B8A8 )
 {
-   for(U32 i = 0; i < 6; i++)
-      mTextures[i] = NULL;
+      mTexture = NULL;
    
    GFXTextureManager::addEventDelegate( this, &GFXVulkanCubemap::_onTextureEvent );
 }
@@ -48,10 +48,10 @@ GFXVulkanCubemap::~GFXVulkanCubemap()
    GFXTextureManager::removeEventDelegate( this, &GFXVulkanCubemap::_onTextureEvent );
 }
 
-void GFXVulkanCubemap::fillCubeTextures(GFXTexHandle* faces)
+void GFXVulkanCubemap::fillCubeTextures(GFXTexHandle faces)
 {
-   AssertFatal( faces, "");
-   AssertFatal( faces[0]->mMipLevels > 0, "");
+   //AssertFatal( faces, "");
+   //AssertFatal( faces[0]->mMipLevels > 0, "");
 
    //PRESERVE_CUBEMAP_TEXTURE();
    //VulkanBindTexture(Vulkan_TEXTURE_CUBE_MAP, mCubemap);
@@ -126,93 +126,54 @@ void GFXVulkanCubemap::initStatic( DDSFile *dds )
    if(mCubemap)
       return;
       
-   //AssertFatal( dds, "GFXVulkanCubemap::initStatic - Got null DDS file!" );
-   //AssertFatal( dds->isCubemap(), "GFXVulkanCubemap::initStatic - Got non-cubemap DDS file!" );
-   //AssertFatal( dds->mSurfaces.size() == 6, "GFXVulkanCubemap::initStatic - DDS has less than 6 surfaces!" );
+   AssertFatal( dds, "GFXVulkanCubemap::initStatic - Got null DDS file!" );
+   AssertFatal( dds->isCubemap(), "GFXVulkanCubemap::initStatic - Got non-cubemap DDS file!" );
+   AssertFatal( dds->mSurfaces.size() == 6, "GFXVulkanCubemap::initStatic - DDS has less than 6 surfaces!" );
+   AssertFatal( dds->getWidth() == dds->getHeight(), "GFXVulkanCubemap::initStatic - cubemaps must be square!");
 
-   //mWidth = dds->getWidth();
-   //mHeight = dds->getHeight();
+   size = dds->getWidth();
    //mFaceFormat = dds->getFormat();
-   //mMipMapLevels = dds->getMipLevels();
+   mMipMapLevels = dds->getMipLevels();
    //const bool isCompressed = ImageUtil::isCompressedFormat(mFaceFormat);
    //VulkanGenTextures(1, &mCubemap);
 
-   //PRESERVE_CUBEMAP_TEXTURE();
-   //VulkanBindTexture(Vulkan_TEXTURE_CUBE_MAP, mCubemap);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MAX_LEVEL, mMipMapLevels - 1);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MIN_FILTER, Vulkan_NEAREST);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MAG_FILTER, Vulkan_NEAREST);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_S, Vulkan_CLAMP_TO_EDGE);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_T, Vulkan_CLAMP_TO_EDGE);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_R, Vulkan_CLAMP_TO_EDGE);
+   VkImageUsageFlags usage = {VK_IMAGE_USAGE_SAMPLED_BIT & VK_IMAGE_USAGE_TRANSFER_DST_BIT};
 
-   //AssertFatal(mWidth == mHeight, "GFXVulkanCubemap::initStatic - Width and height must be equal!");
-   //
-   //for(U32 i = 0; i < 6; i++)
-   //{
-   //   if ( !dds->mSurfaces[i] )
-   //   {
-   //      // TODO: The DDS can skip surfaces, but i'm unsure what i should
-   //      // do here when creating the cubemap.  Ignore it for now.
-   //      continue;
-   //   }
+	if (!GFXVulkan->createImage(VK_IMAGE_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, { size, size, 1},
+		mMipMapLevels, 6, VK_SAMPLE_COUNT_1_BIT, usage, true, mCubemap) )
+		return;
 
-   //   // convert to Z up
-   //   const U32 faceIndex = _zUpFaceIndex(i);
+	VkDeviceMemory memory_object;
+	if (!GFXVulkan->allocateAndBindMemoryObjectToImage(mCubemap, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object))
+		return;
 
-   //   // Now loop thru the mip levels!
-   //   for (U32 mip = 0; mip < mMipMapLevels; ++mip)
-   //   {
-   //      const U32 mipWidth  = getMax( U32(1), mWidth >> mip );
-   //      const U32 mipHeight = getMax( U32(1), mHeight >> mip );
-   //      if (isCompressed)
-   //         VulkanCompressedTexImage2D(faceList[faceIndex], mip, GFXVulkanTextureInternalFormat[mFaceFormat], mipWidth, mipHeight, 0, dds->getSurfaceSize(mip), dds->mSurfaces[i]->mMips[mip]);
-   //      else
-   //         VulkanTexImage2D(faceList[faceIndex], mip, GFXVulkanTextureInternalFormat[mFaceFormat], mipWidth, mipHeight, 0,
-   //            GFXVulkanTextureFormat[mFaceFormat], GFXVulkanTextureType[mFaceFormat], dds->mSurfaces[i]->mMips[mip]);
-   //   }
-   //}
+	VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+	VkImageView image_view;
+	if (!GFXVulkan->createImageView(mCubemap, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, aspect, image_view))
+		return;
 }
 
 void GFXVulkanCubemap::initDynamic(U32 texSize, GFXFormat faceFormat)
 {
-   //mDynamicTexSize = texSize;
-   //mFaceFormat = faceFormat;
-   //const bool isCompressed = ImageUtil::isCompressedFormat(faceFormat);
-   //mMipMapLevels = getMax( (U32)1, getMaxMipmaps( texSize, texSize, 1 ) );
+   mDynamicTexSize = texSize;
+   mFaceFormat = faceFormat;
+   const bool isCompressed = ImageUtil::isCompressedFormat(faceFormat);
+   mMipMapLevels = getMax( static_cast<U32>(1), getMaxMipmaps( texSize, texSize, 1 ) );
 
-   //VulkanGenTextures(1, &mCubemap);
-   //PRESERVE_CUBEMAP_TEXTURE();
-   //VulkanBindTexture(Vulkan_TEXTURE_CUBE_MAP, mCubemap);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MAX_LEVEL, mMipMapLevels - 1);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MIN_FILTER, Vulkan_NEAREST);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_MAG_FILTER, Vulkan_NEAREST);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_S, Vulkan_CLAMP_TO_EDGE);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_T, Vulkan_CLAMP_TO_EDGE);
-   //VulkanTexParameteri(Vulkan_TEXTURE_CUBE_MAP, Vulkan_TEXTURE_WRAP_R, Vulkan_CLAMP_TO_EDGE);
-   //mWidth = texSize;
-   //mHeight = texSize;
+   VkImageUsageFlags usage = {VK_IMAGE_USAGE_SAMPLED_BIT & VK_IMAGE_USAGE_TRANSFER_DST_BIT};
 
-   // for(U32 i = 0; i < 6; i++)
-   // {
-   //     if( ImageUtil::isCompressedFormat(faceFormat) )
-   //     {
-   //         for( U32 mip = 0; mip < mMipMapLevels; ++mip )
-   //         {
-   //             const U32 mipSize = getMax( U32(1), texSize >> mip );
-   //             const U32 mipDataSize = getCompressedSurfaceSize( mFaceFormat, texSize, texSize, mip );
-   //             VulkanCompressedTexImage2D(faceList[i], mip, GFXVulkanTextureInternalFormat[mFaceFormat], mipSize, mipSize, 0, mipDataSize, NULL);
-   //         }
-   //     }
-   //     else
-   //     {
-   //         VulkanTexImage2D( faceList[i], 0, GFXVulkanTextureInternalFormat[faceFormat], texSize, texSize, 
-   //             0, GFXVulkanTextureFormat[faceFormat], GFXVulkanTextureType[faceFormat], NULL);
-   //     }
-   // }
+	if (!GFXVulkan->createImage(VK_IMAGE_TYPE_2D, VK_FORMAT_R8G8B8A8_UNORM, { size, size, 1},
+		mMipMapLevels, 6, VK_SAMPLE_COUNT_1_BIT, usage, true, mCubemap) )
+		return;
 
-   // if( !isCompressed )
-   //     VulkanGenerateMipmap(Vulkan_TEXTURE_CUBE_MAP);
+	VkDeviceMemory memory_object;
+	if (!GFXVulkan->allocateAndBindMemoryObjectToImage(mCubemap, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, memory_object))
+		return;
+
+	VkImageAspectFlags aspect = VK_IMAGE_ASPECT_COLOR_BIT;
+	VkImageView image_view;
+	if (!GFXVulkan->createImageView(mCubemap, VK_IMAGE_VIEW_TYPE_CUBE, VK_FORMAT_R8G8B8A8_UNORM, aspect, image_view))
+		return;
 }
 
 void GFXVulkanCubemap::zombify()
@@ -235,7 +196,7 @@ void GFXVulkanCubemap::tmResurrect()
       if ( mDDSFile )
          initStatic( mDDSFile );
       else
-         initStatic( mTextures );
+         initStatic( &mTexture );
    }
 }
 

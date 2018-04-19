@@ -1241,7 +1241,7 @@ void Namespace::getEntryList(VectorPtr<Entry *> *vec)
       if (mHashTable[i])
          vec->push_back(mHashTable[i]);
 
-   dQsort(vec->address(), vec->size(), sizeof(Namespace::Entry *), compareEntries);
+   dQsort(vec->data(), vec->size(), sizeof(Namespace::Entry *), compareEntries);
 }
 
 Namespace::Entry *Namespace::createLocalEntry(StringTableEntry name)

@@ -98,7 +98,7 @@ U32 ClippedPolyList::addPointAndNormal(const Point3F& p, const Point3F& normal)
    // Build the plane mask
    U32      mask = 1;
    S32      count = mPlaneList.size();
-   PlaneF * plane = mPlaneList.address();
+   PlaneF * plane = mPlaneList.data();
 
    v.mask = 0;
    while(--count >= 0) {
@@ -392,8 +392,8 @@ void ClippedPolyList::triangulate()
 
    // Copy the source lists to our temp list and clear
    // the originals which will recieve the results.
-   mTempPolyList.set( mPolyList.address(), mPolyList.size() );
-   mTempIndexList.set( mIndexList.address(), mIndexList.size() );
+   mTempPolyList.set( mPolyList.data(), mPolyList.size() );
+   mTempIndexList.set( mIndexList.data(), mIndexList.size() );
    mPolyList.clear();
    mIndexList.clear();
 

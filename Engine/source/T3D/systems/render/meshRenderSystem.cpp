@@ -209,7 +209,7 @@ void MeshRenderSystem::rebuildBuffers()
             continue;
 
          tempIndices.setSize(poly.vertexCount);
-         dMemset(tempIndices.address(), 0, poly.vertexCount);
+         dMemset(tempIndices.data(), 0, poly.vertexCount);
 
          if (poly.type == OptimizedPolyList::TriangleStrip ||
             poly.type == OptimizedPolyList::TriangleFan)

@@ -893,7 +893,7 @@ void SFXSystem::_sortSounds( const SFXListenerProperties& listener )
    // with the loudest and highest priority sounds 
    // at the front of the vector.
    
-   dQsort( ( void* ) mSounds.address(), mSounds.size(), sizeof( SFXSound* ), SFXSound::qsortCompare );
+   dQsort( ( void* ) mSounds.data(), mSounds.size(), sizeof( SFXSound* ), SFXSound::qsortCompare );
 }
 
 //-----------------------------------------------------------------------------

@@ -805,7 +805,7 @@ ImplementEnumType(_TamlFormatMode,
 
       // Sort Entries to prevent version control conflicts
       if (dynamicFieldList.size() > 1)
-         dQsort(dynamicFieldList.address(), dynamicFieldList.size(), sizeof(SimFieldDictionary::Entry*), compareFieldEntries);
+         dQsort(dynamicFieldList.data(), dynamicFieldList.size(), sizeof(SimFieldDictionary::Entry*), compareFieldEntries);
 
       // Save the fields.
       for (Vector<SimFieldDictionary::Entry*>::iterator entryItr = dynamicFieldList.begin(); entryItr != dynamicFieldList.end(); ++entryItr)

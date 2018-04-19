@@ -942,7 +942,7 @@ void GFont::importStrip(const char *fileName, U32 padding, U32 kerning)
    }
 
    // Ok, we have a big list of glyphmaps now. So let's sort them, then pack them.
-   dQsort(glyphList.address(), glyphList.size(), sizeof(GlyphMap), GlyphMapCompare);
+   dQsort(glyphList.data(), glyphList.size(), sizeof(GlyphMap), GlyphMapCompare);
 
    // They're sorted by height, so now we can do some sort of awesome packing.
    Point2I curSheetSize(256, 256);

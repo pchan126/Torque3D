@@ -379,7 +379,7 @@ void CodeStream::emitCodeStream(U32 *size, U32 **stream, U32 **lineBreaks)
    }
 
    *lineBreaks = *stream + mCodePos;
-   dMemcpy(*lineBreaks, mBreakLines.address(), sizeof(U32) * mBreakLines.size());
+   dMemcpy(*lineBreaks, mBreakLines.data(), sizeof(U32) * mBreakLines.size());
 
    // Apply patches on top
    for (U32 i = 0; i<mPatchList.size(); i++)

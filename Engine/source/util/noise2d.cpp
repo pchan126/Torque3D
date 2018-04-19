@@ -259,7 +259,7 @@ bool Noise2D::erodeHydraulic( Vector<F32> *src, Vector<F32> *dst, U32 iterations
 
 // currently using SCRATCH_3 for debugging -- Rick
    Vector<F32> scratch = *src;
-   U32 *o = (U32*)scratch.address();
+   U32 *o = (U32*)scratch.data();
    Vector<F32> a = *src;
    Vector<F32> b = *src;
    Vector<F32> c = *src;
@@ -362,7 +362,7 @@ bool Noise2D::erodeThermal(Vector<F32> *src, Vector<F32> *dst, F32 slope, F32 ma
    for (U32 i=0; i<iterations; i++)
    {
       // clear out the rubble accumulation field
-      dMemset( r.address(), 0, r.memSize() );
+      dMemset( r.data(), 0, r.memSize() );
 
       for (S32 y=0; y<size; y++)
       {
@@ -406,7 +406,7 @@ void Noise2D::getMinMax( Vector<F32> *src, F32 *fmin, F32 *fmax, U32 size )
    if (!src)
       return;
 
-   F32 *p = (*src).address();
+   F32 *p = (*src).data();
    *fmin = *p;
    *fmax = *p;
    for (S32 i=0; i < (size*size); i++, p++)

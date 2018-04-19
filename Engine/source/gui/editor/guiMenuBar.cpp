@@ -1134,7 +1134,7 @@ bool GuiMenuBar::onWake()
    S32 numBitmaps = mProfile->mBitmapArrayRects.size();
    if(numBitmaps)
    {
-      RectI *bitmapBounds = mProfile->mBitmapArrayRects.address();
+      RectI *bitmapBounds = mProfile->mBitmapArrayRects.data();
       for(S32 i = 0; i < numBitmaps; i++)
       {
          if(bitmapBounds[i].extent.x > maxBitmapSize.x)
@@ -1202,14 +1202,14 @@ void GuiMenuBar::onPreRender()
             if (!mMenuList[i].drawBitmapOnly)
             {
                // Draw the bitmap and the text
-               RectI *bitmapBounds = mProfile->mBitmapArrayRects.address();
+               RectI *bitmapBounds = mProfile->mBitmapArrayRects.data();
                mMenuList[i].bounds.set(curX, 0, bitmapBounds[mMenuList[i].bitmapIndex].extent.x + mProfile->mFont->getStrWidth(mMenuList[i].text) + (mHorizontalMargin * 2), getHeight() + (mVerticalMargin * 2));
 
             }
             else
             {
                // Only the bitmap will be drawn
-               RectI *bitmapBounds = mProfile->mBitmapArrayRects.address();
+               RectI *bitmapBounds = mProfile->mBitmapArrayRects.data();
                mMenuList[i].bounds.set(curX, 0, bitmapBounds[mMenuList[i].bitmapIndex].extent.x + mBitmapMargin + (mHorizontalMargin * 2), getHeight() + (mVerticalMargin * 2));
             }
          }

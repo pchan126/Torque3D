@@ -152,7 +152,7 @@ bool GuiInspectorDynamicGroup::inspectGroup()
       }
    }
 
-   dQsort( flist.address(), flist.size(), sizeof( FieldEntry ), compareEntries );
+   dQsort( flist.data(), flist.size(), sizeof( FieldEntry ), compareEntries );
 
    for(U32 i = 0; i < flist.size(); i++)
    {

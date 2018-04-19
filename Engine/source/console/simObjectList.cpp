@@ -105,7 +105,7 @@ S32 QSORT_CALLBACK SimObjectList::_compareId(const void* a,const void* b)
 
 void SimObjectList::sortId()
 {
-   dQsort(address(),size(),sizeof(value_type),_compareId);
+   dQsort(data(),size(),sizeof(value_type),_compareId);
 }
 
 S32 QSORT_CALLBACK SimObjectList::_callbackSort( const void *a, const void *b )
@@ -126,6 +126,6 @@ void SimObjectList::scriptSort( const String &scriptCallback )
    AssertFatal( smSortScriptCallbackFn.isEmpty(), "SimObjectList::scriptSort() - The script sort is not reentrant!" );
 
    smSortScriptCallbackFn = scriptCallback;
-   dQsort( address(), size(), sizeof(value_type), _callbackSort );
+   dQsort( data(), size(), sizeof(value_type), _callbackSort );
    smSortScriptCallbackFn = String::EmptyString;
 }

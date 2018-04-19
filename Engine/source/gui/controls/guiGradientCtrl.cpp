@@ -548,14 +548,14 @@ void GuiGradientCtrl::addColorRange(Point2I pos, const LinearColorF& color)
 		mColorRange.push_back( range );
 		S32 size = mColorRange.size();
 		if( size > 0 )
-			dQsort( mColorRange.address(), size, sizeof(ColorRange), _numIncreasing);
+			dQsort( mColorRange.data(), size, sizeof(ColorRange), _numIncreasing);
 	}
 	else if( mDisplayMode == pHorizAlphaRange )
 	{
 		mAlphaRange.push_back( range );
 		S32 size = mAlphaRange.size();
 		if( size > 0 )
-			dQsort( mAlphaRange.address(), size, sizeof(ColorRange), _numIncreasing);
+			dQsort( mAlphaRange.data(), size, sizeof(ColorRange), _numIncreasing);
 	}
 }
 
@@ -596,9 +596,9 @@ void GuiGradientCtrl::removeColorRange( GuiGradientSwatchCtrl* swatch )
 void GuiGradientCtrl::sortColorRange()
 {
 	if( mDisplayMode == pHorizColorRange )
-		dQsort( mColorRange.address(), mColorRange.size(), sizeof(ColorRange), _numIncreasing);
+		dQsort( mColorRange.data(), mColorRange.size(), sizeof(ColorRange), _numIncreasing);
 	else if( mDisplayMode == pHorizAlphaRange )
-		dQsort( mAlphaRange.address(), mAlphaRange.size(), sizeof(ColorRange), _numIncreasing);
+		dQsort( mAlphaRange.data(), mAlphaRange.size(), sizeof(ColorRange), _numIncreasing);
 }
 
 DefineConsoleMethod(GuiGradientCtrl, getColorCount, S32, (), , "Get color count")

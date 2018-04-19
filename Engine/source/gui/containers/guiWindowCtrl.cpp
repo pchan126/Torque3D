@@ -681,7 +681,7 @@ bool GuiWindowCtrl::onWake()
       return false;
    }
 
-   mBitmapBounds = mProfile->mBitmapArrayRects.address();
+   mBitmapBounds = mProfile->mBitmapArrayRects.data();
    S32 buttonHeight = mBitmapBounds[BmpStates * BmpClose].extent.y;
 
    mTitleHeight = buttonHeight + 4;
@@ -1442,7 +1442,7 @@ const RectI GuiWindowCtrl::getClientRect()
       return Parent::getClientRect();
       
    if( !mBitmapBounds )
-      mBitmapBounds = mProfile->mBitmapArrayRects.address();
+      mBitmapBounds = mProfile->mBitmapArrayRects.data();
 
    RectI winRect;
    winRect.point.x = mBitmapBounds[BorderLeft].extent.x;

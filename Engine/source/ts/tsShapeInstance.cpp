@@ -820,7 +820,7 @@ void TSShapeInstance::MeshObjectInstance::render(  S32 objectDetail,
       {
          static_cast<TSSkinMesh*>(mesh)->updateSkinBones(*mTransforms, mActiveTransforms);
       }
-      rdata.setNodeTransforms(mActiveTransforms.address(), mActiveTransforms.size());
+      rdata.setNodeTransforms(mActiveTransforms.data(), mActiveTransforms.size());
    }
 
    mesh->render(  materials, 

@@ -119,8 +119,17 @@ void GFXVulkanDevice::init( const GFXVideoMode &mode, PlatformWindow *window )
 
 	glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
+//#ifdef TORQUE_DEBUG
+//    std::vector enabledInstanceLayers;
+//    std::vector enabledInstanceExtensions;
+//#endif
+
 	createInfo.enabledExtensionCount = glfwExtensionCount;
 	createInfo.ppEnabledExtensionNames = glfwExtensions;
+
+	desired_extensions.clear();
+	for (U32 i = 0; i < glfwExtensionCount; i++)
+		desired_extensions.push_back(glfwExtensions[i]);
 
 	createInfo.enabledLayerCount = 0;
 
@@ -133,8 +142,7 @@ void GFXVulkanDevice::init( const GFXVideoMode &mode, PlatformWindow *window )
 	uint32_t extensionCount = 0;
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
 
-	std::vector<VkExtensionProperties> extensions(extensionCount);
-
+	extensions.resize(extensionCount);
 	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
     Con::printf("available extensions:");
@@ -146,11 +154,7 @@ void GFXVulkanDevice::init( const GFXVideoMode &mode, PlatformWindow *window )
 		//std::cout << "\t" << extension.extensionName << std::endl;
 	}
 
-	mCardProfiler = new GFXVulkanCardProfiler();
-	mCardProfiler->init();
-
-	//// It is very important that extensions be loaded before we call initGLState()
-    //initGLState();
+	initVulkanState();
     
     mProjectionMatrix.identity();
     
@@ -182,19 +186,24 @@ GFXWindowTarget *GFXVulkanDevice::allocWindowTarget( PlatformWindow *window )
 		init(window->getVideoMode(), window);
 	}
 
-
 	PlatformWindowGLFW* temp = (PlatformWindowGLFW*)window;
 	VkSurfaceKHR surface;
 	VkResult err = glfwCreateWindowSurface(instance, temp->getGLFWWindow(), NULL, &surface);
 	if (err)
 	{
 		// Window surface creation failed
+		Con::errorf("Window creation failed");
 		return nullptr;
 	}
+	assignQueue(surface);
 	GFXVulkanWindowTarget* ggwt = new GFXVulkanWindowTarget(window, this);
 	ggwt->registerResourceWithDevice(this);
-	ggwt->mSurface = &surface;
-    
+	ggwt->init(surface);
+	allocateCommandBuffer(commandPool, VK_COMMAND_BUFFER_LEVEL_PRIMARY, ggwt->getSwapchainImageCount(), drawCmdBuffers);
+
+	if (mWindowRT == nullptr)
+		mWindowRT = new GFXWindowTargetRef(ggwt);
+
 	return ggwt;
 }
 

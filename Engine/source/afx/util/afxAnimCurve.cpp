@@ -112,7 +112,7 @@ void afxAnimCurve::sort( )
 		return;
 
 	//std::sort( keys.begin(), keys.end(), afxAnimCurve::compare_Key );
-	dQsort( keys.address(), keys.size(), sizeof(Key), afxAnimCurve::compare_Key );
+	dQsort( keys.data(), keys.size(), sizeof(Key), afxAnimCurve::compare_Key );
 	
 	start_value = keys[0].value;
 	final_value = keys[keys.size()-1].value;

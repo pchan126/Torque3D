@@ -176,7 +176,15 @@ public:
                                              bool mustblend, 
                                              bool mustfilter ) { return GFXFormatR8G8B8A8; };
 
-   GFXFence *createFence() { return new GFXGeneralFence( this ); }
+//   GFXFence *createFence() { return new GFXGeneralFence( this ); }
+
+   // Fences
+	U32 mNumFences;
+	U32 mNextFenceIdx;
+	GFXFence** mFences;
+	virtual void createFences(U32 mNumFences) override;
+	virtual void waitForFences() override;
+	
    GFXOcclusionQuery* createOcclusionQuery() { return NULL; }
    
 private:

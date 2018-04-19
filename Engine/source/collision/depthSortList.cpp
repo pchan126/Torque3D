@@ -165,7 +165,7 @@ S32 FN_CDECL compareYExtents( const void* e1, const void* e2)
 void DepthSortList::sortByYExtents()
 {
    gCurrentSort = this;
-   dQsort(mPolyIndexList.address(),mPolyIndexList.size(),sizeof(U32),compareYExtents);
+   dQsort(mPolyIndexList.data(),mPolyIndexList.size(),sizeof(U32),compareYExtents);
 }
 
 //----------------------------------------------------------------------------
@@ -661,13 +661,13 @@ bool DepthSortList::splitPoly(const Poly & src, Point3F & normal, F32 k, Poly & 
 
    if( frontPoly.vertexCount ) {
 	   dMemcpy(&mIndexList[frontPoly.vertexStart],
-		   frontVerts.address(),
+		   frontVerts.data(),
 		   sizeof(U32)*frontPoly.vertexCount);
    }
 
    if( backPoly.vertexCount ) {
 	   dMemcpy(&mIndexList[backPoly.vertexStart],
-		   backVerts.address(),
+		   backVerts.data(),
 		   sizeof(U32)*backPoly.vertexCount);
    }
 

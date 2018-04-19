@@ -48,12 +48,12 @@ TSMaterialList::TSMaterialList(U32 materialCount,
 
    allocate(materialCount);
 
-   dMemcpy(mFlags.address(),materialFlags,materialCount*sizeof(U32));
-   dMemcpy(mReflectanceMaps.address(),reflectanceMaps,materialCount*sizeof(U32));
-   dMemcpy(mBumpMaps.address(),bumpMaps,materialCount*sizeof(U32));
-   dMemcpy(mDetailMaps.address(),detailMaps,materialCount*sizeof(U32));
-   dMemcpy(mDetailScales.address(),detailScales,materialCount*sizeof(F32));
-   dMemcpy(mReflectionAmounts.address(),reflectionAmounts,materialCount*sizeof(F32));
+   dMemcpy(mFlags.data(),materialFlags,materialCount*sizeof(U32));
+   dMemcpy(mReflectanceMaps.data(),reflectanceMaps,materialCount*sizeof(U32));
+   dMemcpy(mBumpMaps.data(),bumpMaps,materialCount*sizeof(U32));
+   dMemcpy(mDetailMaps.data(),detailMaps,materialCount*sizeof(U32));
+   dMemcpy(mDetailScales.data(),detailScales,materialCount*sizeof(F32));
+   dMemcpy(mReflectionAmounts.data(),reflectionAmounts,materialCount*sizeof(F32));
 }
 
 TSMaterialList::TSMaterialList()

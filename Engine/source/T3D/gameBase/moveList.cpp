@@ -97,7 +97,7 @@ U32 MoveList::getMoves(Move** movePtr,U32* numMoves)
       AssertFatal(mLastClientMove >= mFirstMoveIndex, "Bad move request");
       AssertFatal(mLastClientMove - mFirstMoveIndex <= mMoveVec.size(), "Desynched first and last move.");
       *numMoves = mMoveVec.size() - mLastClientMove + mFirstMoveIndex;
-      *movePtr = mMoveVec.address() + mLastClientMove - mFirstMoveIndex;
+      *movePtr = mMoveVec.data() + mLastClientMove - mFirstMoveIndex;
    }
    else
    {

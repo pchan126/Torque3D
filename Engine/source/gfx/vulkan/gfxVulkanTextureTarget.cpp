@@ -26,7 +26,7 @@
 #include "gfx/vulkan/gfxVulkanTextureObject.h"
 #include "gfx/vulkan/gfxVulkanCubemap.h"
 #include "gfx/gfxTextureManager.h"
-//#include "gfx/vulkan/gfxVulkanUtils.h"
+#include "gfx/vulkan/gfxVulkanUtils.h"
 
 /// Internal struct used to track texture information for FBO attachments
 /// This serves as an abstract base so we can deal with cubemaps and standard 
@@ -34,8 +34,8 @@
 class _GFXVulkanTargetDesc
 {
 public:
-   _GFXVulkanTargetDesc(U32 _mipLevel, U32 _zOffset) :
-      mipLevel(_mipLevel), zOffset(_zOffset)
+   _GFXVulkanTargetDesc(U32 _mipLevel, U32 _zOffset, VkAttachmentDescription description) :
+      mipLevel(_mipLevel), zOffset(_zOffset), attachment_description(description)
    {
    }
    
@@ -53,17 +53,19 @@ public:
    U32 getMipLevel() { return mipLevel; }
    U32 getZOffset() { return zOffset; }
    
+	VkAttachmentDescription getDescription() const { return attachment_description; }
 private:
    U32 mipLevel;
    U32 zOffset;
+	VkAttachmentDescription attachment_description;
 };
 
 /// Internal struct used to track 2D/Rect texture information for FBO attachment
 class _GFXVulkanTextureTargetDesc : public _GFXVulkanTargetDesc
 {
 public:
-   _GFXVulkanTextureTargetDesc(GFXVulkanTextureObject* tex, U32 _mipLevel, U32 _zOffset) 
-      : _GFXVulkanTargetDesc(_mipLevel, _zOffset), mTex(tex)
+   _GFXVulkanTextureTargetDesc(GFXVulkanTextureObject* tex, U32 _mipLevel, U32 _zOffset, VkAttachmentDescription description) 
+      : _GFXVulkanTargetDesc(_mipLevel, _zOffset, description), mTex(tex)
    {
    }
    
@@ -86,32 +88,33 @@ public:
    
 private:
    StrongRefPtr<GFXVulkanTextureObject> mTex;
+
 };
 
 /// Internal struct used to track Cubemap texture information for FBO attachment
 class _GFXVulkanCubemapTargetDesc : public _GFXVulkanTargetDesc
 {
 public:
-   _GFXVulkanCubemapTargetDesc(GFXVulkanCubemap* tex, U32 _face, U32 _mipLevel, U32 _zOffset) 
-      : _GFXVulkanTargetDesc(_mipLevel, _zOffset), mTex(tex), mFace(_face)
+   _GFXVulkanCubemapTargetDesc(GFXVulkanCubemap* tex, U32 _face, U32 _mipLevel, U32 _zOffset, VkAttachmentDescription description) 
+      : _GFXVulkanTargetDesc(_mipLevel, _zOffset, description), mTex(tex), mFace(_face)
    {
    }
    
    virtual ~_GFXVulkanCubemapTargetDesc() {}
-   
-   virtual U32 getHandle() { return mTex->getHandle(); }
-   virtual U32 getWidth() { return mTex->getWidth(); }
-   virtual U32 getHeight() { return mTex->getHeight(); }
-   virtual U32 getDepth() { return 0; }
-   virtual bool hasMips() { return mTex->getMipMapLevels() != 1; }
+
+	U32 getHandle() override { return mTex->getHandle(); }
+	U32 getWidth() override { return mTex->getWidth(); }
+	U32 getHeight() override { return mTex->getHeight(); }
+	U32 getDepth() override { return 0; }
+	bool hasMips() override { return mTex->getMipMapLevels() != 1; }
    //virtual  getBinding() { return GFXVulkanCubemap::getEnumForFaceNumber(mFace); }
-   virtual GFXFormat getFormat() { return mTex->getFormat(); }
-   virtual bool isCompatible(const GFXVulkanTextureObject* tex)
+	GFXFormat getFormat() override { return mTex->getFormat(); }
+
+	bool isCompatible(const GFXVulkanTextureObject* tex) override
    {
-	   return true;
-      //return mTex->getFormat() == tex->getFormat()
-      //   && mTex->getWidth() == tex->getWidth()
-      //   && mTex->getHeight() == tex->getHeight();
+      return mTex->getFormat() == tex->getFormat()
+         && mTex->getWidth() == tex->getWidth()
+         && mTex->getHeight() == tex->getHeight();
    }
    
 private:
@@ -137,19 +140,34 @@ class _GFXVulkanTextureTargetFBOImpl : public _GFXVulkanTextureTargetImpl
 {
 public:
    //Vulkanuint mFramebuffer;
+	VkFramebuffer frameBuffer;
    
    _GFXVulkanTextureTargetFBOImpl(GFXVulkanTextureTarget* target);
    virtual ~_GFXVulkanTextureTargetFBOImpl();
-   
-   virtual void applyState();
-   virtual void makeActive();
-   virtual void finish();
+
+	void applyState() override;
+	void makeActive() override;
+	void finish() override;
 };
 
 _GFXVulkanTextureTargetFBOImpl::_GFXVulkanTextureTargetFBOImpl(GFXVulkanTextureTarget* target)
 {
    mTarget = target;
-   //vulkanGenFramebuffers(1, &mFramebuffer);
+   
+	
+    VkFramebufferCreateInfo framebufferInfo = {};
+    framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+//    framebufferInfo.renderPass = renderPass;
+    framebufferInfo.attachmentCount = 1;
+//    framebufferInfo.pAttachments = attachments;
+    framebufferInfo.width = target->getSize().x;
+    framebufferInfo.height = target->getSize().y;
+    framebufferInfo.layers = 1;
+
+    //if (vkCreateFramebuffer(GFXVulkan->getLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+    //    throw std::runtime_error("failed to create framebuffer!");
+    //}
+	//vulkanGenFramebuffers(1, &mFramebuffer);
 }
 
 _GFXVulkanTextureTargetFBOImpl::~_GFXVulkanTextureTargetFBOImpl()
@@ -303,7 +321,18 @@ GFXFormat GFXVulkanTextureTarget::getFormat()
 
 void GFXVulkanTextureTarget::attachTexture( RenderSlot slot, GFXTextureObject *tex, U32 mipLevel/*=0*/, U32 zOffset /*= 0*/ )
 {
-   if( tex == GFXTextureTarget::sDefaultDepthStencil )
+	VkAttachmentDescription color_attachment = {};
+	color_attachment.flags = 0;
+	color_attachment.format = GFXVulkanTextureFormat[tex->getFormat()];
+	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	color_attachment.finalLayout = (slot == DepthStencil) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	if( tex == GFXTextureTarget::sDefaultDepthStencil )
       tex = GFXVulkan->getDefaultDepthTex();
 
    _GFXVulkanTextureTargetDesc* mTex = static_cast<_GFXVulkanTextureTargetDesc*>(mTargets[slot].ptr());
@@ -316,26 +345,38 @@ void GFXVulkanTextureTarget::attachTexture( RenderSlot slot, GFXTextureObject *t
    // We stash the texture and info into an internal struct.
    GFXVulkanTextureObject* vulkanTexture = static_cast<GFXVulkanTextureObject*>(tex);
    if(tex && tex != GFXTextureTarget::sDefaultDepthStencil)
-      mTargets[slot] = new _GFXVulkanTextureTargetDesc(vulkanTexture, mipLevel, zOffset);
+      mTargets[slot] = new _GFXVulkanTextureTargetDesc(vulkanTexture, mipLevel, zOffset, color_attachment);
    else
-      mTargets[slot] = NULL;
+      mTargets[slot] = nullptr;
 }
 
 void GFXVulkanTextureTarget::attachTexture( RenderSlot slot, GFXCubemap *tex, U32 face, U32 mipLevel/*=0*/ )
 {
-   // No depth cubemaps, sorry
+	// No depth cubemaps, sorry
    AssertFatal(slot != DepthStencil, "GFXVulkanTextureTarget::attachTexture (cube) - Cube depth textures not supported!");
    if(slot == DepthStencil)
       return;
     
    // Triggers an update when we next render
    invalidateState();
-   
-   //// We stash the texture and info into an internal struct.
-   //GFXVulkanCubemap* vulkanTexture = static_cast<GFXVulkanCubemap*>(tex);
-   //if(tex)
-   //   mTargets[slot] = new _GFXVulkanCubemapTargetDesc(vulkanTexture, face, mipLevel, 0);
-   //else
+
+	VkAttachmentDescription color_attachment = {};
+	color_attachment.flags = 0;
+	color_attachment.format = GFXVulkanTextureFormat[tex->getFormat()];
+	color_attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	color_attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	color_attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	color_attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	color_attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	color_attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	color_attachment.finalLayout = (slot == DepthStencil) ? VK_IMAGE_LAYOUT_PRESENT_SRC_KHR : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	
+   // We stash the texture and info into an internal struct.
+   GFXVulkanCubemap* vulkanTexture = static_cast<GFXVulkanCubemap*>(tex);
+   if(tex)
+      mTargets[slot] = new _GFXVulkanCubemapTargetDesc(vulkanTexture, face, mipLevel, 0, color_attachment);
+   else
       mTargets[slot] = NULL;
 }
 
@@ -434,4 +475,15 @@ void GFXVulkanTextureTarget::resolveTo(GFXTextureObject* obj)
    //
    //vulkanBlitFramebuffer(0, 0, mTargets[Color0]->getWidth(), mTargets[Color0]->getHeight(),
    //   0, 0, vulkanTexture->getWidth(), vulkanTexture->getHeight(), Vulkan_COLOR_BUFFER_BIT, Vulkan_NEAREST);
+}
+
+std::vector<VkAttachmentDescription> GFXVulkanTextureTarget::getAttachmentsDescriptions()
+{
+	std::vector<VkAttachmentDescription> retval;
+	for (auto itr: mTargets)
+	{
+		if (!itr.isNull())
+			retval.push_back(itr->getDescription());
+	}
+	return retval;
 }

@@ -75,7 +75,7 @@ void StdMoveList::clientWriteMovePacket(BitStream *bstream)
    AssertFatal(mLastMoveAck == mFirstMoveIndex, "Invalid move index.");
    U32 count = mMoveVec.size();
 
-   Move * move = mMoveVec.address();
+   Move * move = mMoveVec.data();
    U32 start = mLastMoveAck;
    U32 offset;
    for(offset = 0; offset < count; offset++)

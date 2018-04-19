@@ -1223,7 +1223,7 @@ bool River::castRay(const Point3F &s, const Point3F &e, RayInfo* info)
       }
    }
 
-   dQsort( hitSegments.address(), hitSegments.size(), sizeof(RiverHitSegment), compareHitSegments );
+   dQsort( hitSegments.data(), hitSegments.size(), sizeof(RiverHitSegment), compareHitSegments );
 
    U32 idx0, idx1, idx2;
    F32 t;

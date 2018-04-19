@@ -130,7 +130,7 @@ bool GuiRolloutCtrl::onAdd()
 
    mHasTexture = ( mProfile ? mProfile->constructBitmapArray() > 0 : false );
    if ( mHasTexture )
-      mBitmapBounds = mProfile->mBitmapArrayRects.address();
+      mBitmapBounds = mProfile->mBitmapArrayRects.data();
 
    // Calculate Heights for this control
    calculateHeights();

@@ -1887,7 +1887,7 @@ void mBuildHull2D(const Vector<Point2F> _inPoints, Vector<Point2F> &hullPoints)
    Vector<Point2F> inSortedPoints = _inPoints;
    inSortedPoints.sort( &Util::CompareLexicographic );
 
-   Point2F* lowerHullPtr = hullPoints.address();
+   Point2F* lowerHullPtr = hullPoints.data();
    U32 lowerHullIdx = 0;
 
    //lower part of hull
@@ -1901,7 +1901,7 @@ void mBuildHull2D(const Vector<Point2F> _inPoints, Vector<Point2F> &hullPoints)
 
    --lowerHullIdx; // last point are the same as first in upperHullPtr
 
-   Point2F* upperHullPtr = hullPoints.address() + lowerHullIdx;
+   Point2F* upperHullPtr = hullPoints.data() + lowerHullIdx;
    U32 upperHullIdx = 0;
 
    //upper part of hull

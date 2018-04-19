@@ -45,6 +45,9 @@
 #include "console/consoleTypes.h"
 #include "console/engineAPI.h"
 
+#include "renderInstance/renderPassManager.h"
+#include "lighting/shadowMap/shadowMapPass.h"
+
 GFXDevice * GFXDevice::smGFXDevice = NULL;
 bool GFXDevice::smWireframe = false;
 bool GFXDevice::smDisableVSync = true;
@@ -859,6 +862,16 @@ void GFXDevice::setViewport( const RectI &inRect )
    }   
 }
 
+GFXRenderPassImpl* GFXDevice::makeRenderPassImpl(RenderPassManager* main)
+{
+	return nullptr;
+}
+
+GFXRenderBinImpl * GFXDevice::makeRenderBinImpl(RenderBinManager* main)
+{
+	return nullptr;
+}
+
 void GFXDevice::pushActiveRenderTarget()
 {
    // Push the current target on to the stack.
@@ -867,7 +880,7 @@ void GFXDevice::pushActiveRenderTarget()
 
 void GFXDevice::popActiveRenderTarget()
 {
-   AssertFatal( mRTStack.size() > 0, "GFXDevice::popActiveRenderTarget() - stack is empty!" );
+   AssertFatal( !mRTStack.empty(), "GFXDevice::popActiveRenderTarget() - stack is empty!" );
 
    // Restore the last item on the stack and pop.
    setActiveRenderTarget( mRTStack.last() );

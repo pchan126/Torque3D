@@ -134,6 +134,7 @@ RenderPassManager::RenderPassManager()
 
    mMatrixSet = reinterpret_cast<MatrixSet *>(dMalloc_aligned(sizeof(MatrixSet), 16));
    constructInPlace(mMatrixSet);
+   render_pass_impl = GFX->makeRenderPassImpl(this);
 }
 
 RenderPassManager::~RenderPassManager()
@@ -189,9 +190,9 @@ void RenderPassManager::removeManager(RenderBinManager* mgr)
    mRenderBins.remove( mgr );
 }
 
-RenderBinManager* RenderPassManager::getManager(S32 i) const
+RenderBinManager* RenderPassManager::getManager(U32 i) const
 {
-   if (i >= 0 && i < mRenderBins.size())
+   if (i < mRenderBins.size())
       return mRenderBins[i];
    else
       return NULL;

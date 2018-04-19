@@ -761,7 +761,7 @@ static const char* returnClassList( Vector< AbstractClassRep* >& classes, U32 bu
    if( !classes.size() )
       return "";
       
-   dQsort( classes.address(), classes.size(), sizeof( AbstractClassRep* ), ACRCompare );
+   dQsort( classes.data(), classes.size(), sizeof( AbstractClassRep* ), ACRCompare );
 
    char* ret = Con::getReturnBuffer( bufSize );
    dStrcpy( ret, classes[ 0 ]->getClassName() );

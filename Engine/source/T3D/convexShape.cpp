@@ -929,7 +929,7 @@ void ConvexShape::cullEmptyPlanes( Vector< U32 > *removedPlanes )
          removedPlanes->push_back( used[i] );
    }
    
-   dQsort( removedPlanes->address(), removedPlanes->size(), sizeof( U32 ), sortDescendingU32 );
+   dQsort( removedPlanes->data(), removedPlanes->size(), sizeof( U32 ), sortDescendingU32 );
 
    for ( S32 i = 0; i < removedPlanes->size(); i++ )
    {
@@ -1157,7 +1157,7 @@ void ConvexShape::_updateCollision()
 
    // The convex generation from a point cloud 
    // can fail at times... give up in that case.
-   if ( !colShape->addConvex(    mGeometry.points.address(), 
+   if ( !colShape->addConvex(    mGeometry.points.data(), 
                                  mGeometry.points.size(), 
                                  MatrixF::Identity ) )
    {

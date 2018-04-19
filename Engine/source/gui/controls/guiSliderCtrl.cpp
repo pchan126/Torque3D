@@ -157,7 +157,7 @@ bool GuiSliderCtrl::onWake()
    mHasTexture = mProfile->constructBitmapArray() >= NumBitmaps;  
 	if( mHasTexture )
    {
-      mBitmapBounds = mProfile->mBitmapArrayRects.address();
+      mBitmapBounds = mProfile->mBitmapArrayRects.data();
 		mThumbSize = Point2I( mBitmapBounds[ SliderButtonNormal ].extent.x, mBitmapBounds[ SliderButtonNormal ].extent.y );
 	}
 

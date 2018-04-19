@@ -291,10 +291,10 @@ void Portal::_renderObject( ObjectRenderInst *ri, SceneRenderState *state, BaseM
       case InteriorPortal: color = viewSide == PlaneF::Front ? ColorI( 128, 128, 0, 45 ) : ColorI( 255, 255, 0, 45 ); break;
    }
 
-   GFX->getDrawUtil()->drawPolygon( desc, mPortalPolygonWS.address(), mPortalPolygonWS.size(), color );
+   GFX->getDrawUtil()->drawPolygon( desc, mPortalPolygonWS.data(), mPortalPolygonWS.size(), color );
 
    desc.setFillModeWireframe();
-   GFX->getDrawUtil()->drawPolygon( desc, mPortalPolygonWS.address(), mPortalPolygonWS.size(), ColorI::RED );
+   GFX->getDrawUtil()->drawPolygon( desc, mPortalPolygonWS.data(), mPortalPolygonWS.size(), ColorI::RED );
 
    // Render rest.
 
@@ -512,7 +512,7 @@ bool Portal::_generateCullingVolume( SceneTraversalState* state, SceneCullingVol
    U32 numVertices = 0;
 
    numVertices = currentVolume.getPlanes().clipPolygon(
-      mPortalPolygonWS.address(),
+      mPortalPolygonWS.data(),
       mPortalPolygonWS.size(),
       vertices,
       sizeof( vertices ) /sizeof( vertices[ 0 ] )
@@ -630,7 +630,7 @@ void Portal::_updateGeometry()
       const PlaneF slicePlane = PlaneF( Point3F::Zero, Point3F( 0.f, 1.f, 0.f ) );
 
       mPortalPolygonWS.setSize( mPolyhedron.getNumEdges() );
-      U32 numPoints = mPolyhedron.constructIntersection( slicePlane, mPortalPolygonWS.address(), mPortalPolygonWS.size() );
+      U32 numPoints = mPolyhedron.constructIntersection( slicePlane, mPortalPolygonWS.data(), mPortalPolygonWS.size() );
       mPortalPolygonWS.setSize( numPoints );
 
       // Transform the polygon to world space.

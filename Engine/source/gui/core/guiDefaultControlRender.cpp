@@ -153,7 +153,7 @@ void renderBorder( const RectI &bounds, GuiControlProfile *profile )
 
          RectI destRect;
          RectI stretchRect;
-         RectI* mBitmapBounds = profile->mBitmapArrayRects.address();
+         RectI* mBitmapBounds = profile->mBitmapArrayRects.data();
 
          //  Indices into the bitmap array
          enum
@@ -283,7 +283,7 @@ void renderSizableBitmapBordersFilled( const RectI &bounds, S32 baseMultiplier, 
    {
       RectI destRect;
       RectI stretchRect;
-      RectI* mBitmapBounds = profile->mBitmapArrayRects.address();
+      RectI* mBitmapBounds = profile->mBitmapArrayRects.data();
 
       // Draw all corners first.
 
@@ -383,7 +383,7 @@ void renderSizableBitmapBordersFilledIndex( const RectI &bounds, S32 startIndex,
    {
       RectI destRect;
       RectI stretchRect;
-      RectI* mBitmapBounds = profile->mBitmapArrayRects.address();
+      RectI* mBitmapBounds = profile->mBitmapArrayRects.data();
 
       // Draw all corners first.
 
@@ -479,7 +479,7 @@ void renderFixedBitmapBordersFilled( const RectI &bounds, S32 baseMultiplier, Gu
    {
       RectI destRect;
       RectI stretchRect;
-      RectI* mBitmapBounds = profile->mBitmapArrayRects.address();
+      RectI* mBitmapBounds = profile->mBitmapArrayRects.data();
 
       // Draw all corners first.
 
@@ -524,7 +524,7 @@ void renderFixedBitmapBordersFilledIndex( const RectI &bounds, S32 startIndex, G
    {
       RectI destRect;
       RectI stretchRect;
-      RectI* mBitmapBounds = profile->mBitmapArrayRects.address();
+      RectI* mBitmapBounds = profile->mBitmapArrayRects.data();
 
       // Draw all corners first.
 

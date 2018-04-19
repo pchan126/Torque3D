@@ -269,7 +269,7 @@ void BasicLightManager::_onPreRender( SceneManager *sceneManger, const SceneRend
    U32 pluginCount = (*pluginInsts).size();
 
    // Sort them by the score.
-   dQsort( (*pluginInsts).address(), pluginCount, sizeof(BasicSceneObjectLightingPlugin*), comparePluginScores );
+   dQsort( (*pluginInsts).data(), pluginCount, sizeof(BasicSceneObjectLightingPlugin*), comparePluginScores );
 
    mTimer->getElapsedMs();
    mTimer->reset();

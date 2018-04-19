@@ -342,7 +342,7 @@ void PopupMenu::showPopup(GuiCanvas *owner, S32 x /* = -1 */, S32 y /* = -1 */)
       S32 numBitmaps = profile->mBitmapArrayRects.size();
       if (numBitmaps)
       {
-         RectI *bitmapBounds = profile->mBitmapArrayRects.address();
+         RectI *bitmapBounds = profile->mBitmapArrayRects.data();
          for (S32 i = 0; i < numBitmaps; i++)
          {
             if (bitmapBounds[i].extent.x > maxBitmapSize.x)

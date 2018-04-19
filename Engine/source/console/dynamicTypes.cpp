@@ -62,7 +62,7 @@ void ConsoleBaseType::initialize()
 {
    // Prep and empty the vector.
    gConsoleTypeTable.setSize(smConsoleTypeCount+1);
-   dMemset(gConsoleTypeTable.address(), 0, sizeof(ConsoleBaseType*) * gConsoleTypeTable.size());
+   dMemset(gConsoleTypeTable.data(), 0, sizeof(ConsoleBaseType*) * gConsoleTypeTable.size());
 
    // Walk the list and register each one with the console system.
    ConsoleBaseType *walk = getListHead();

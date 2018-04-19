@@ -436,7 +436,7 @@ void SceneManager::_renderScene( SceneRenderState* state, U32 objectMask, SceneZ
    // Cull the list.
 
    U32 numRenderObjects = state->getCullingState().cullObjects(
-      mBatchQueryList.address(),
+      mBatchQueryList.data(),
       mBatchQueryList.size(),
       !state->isDiffusePass() ? SceneCullingState::CullEditorOverrides : 0 // Keep forced editor stuff out of non-diffuse passes.
    );
@@ -475,7 +475,7 @@ void SceneManager::_renderScene( SceneRenderState* state, U32 objectMask, SceneZ
    // Render the remaining objects.
 
    PROFILE_START( Scene_renderObjects );
-   state->renderObjects( mBatchQueryList.address(), numRenderObjects );
+   state->renderObjects( mBatchQueryList.data(), numRenderObjects );
    PROFILE_END();
 
    // Render bounding boxes, if enabled.

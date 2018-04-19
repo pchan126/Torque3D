@@ -202,7 +202,7 @@ void ReflectionManager::update(  F32 timeSlice,
       (*reflectorIter)->calcScore( refparams );
 
    // Sort them by the score.
-   dQsort( mReflectors.address(), mReflectors.size(), sizeof(ReflectorBase*), compareReflectors );
+   dQsort( mReflectors.data(), mReflectors.size(), sizeof(ReflectorBase*), compareReflectors );
    
    // Update as many reflections as we can 
    // within the target time limit.

@@ -124,6 +124,8 @@ public:
    RenderPassManager();
    virtual ~RenderPassManager();
 
+	GFXRenderPassImpl* render_pass_impl;
+
    /// @name Allocation interface
    /// @{
 
@@ -202,7 +204,7 @@ public:
    U32 getManagerCount() const { return mRenderBins.size(); }
 
    /// Get the render manager at i
-   RenderBinManager* getManager( S32 i ) const;
+   RenderBinManager* getManager(U32 i) const;
 
    /// @}
 

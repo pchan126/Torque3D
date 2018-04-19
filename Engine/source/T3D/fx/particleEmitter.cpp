@@ -1816,13 +1816,13 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
      }
 
      // qsort the list into far to near ordering
-     dQsort(orderedVector.address(), orderedVector.size(), sizeof(SortParticle), cmpSortParticles);
+     dQsort(orderedVector.data(), orderedVector.size(), sizeof(SortParticle), cmpSortParticles);
    }
    PROFILE_END();
 
    static Vector<ParticleVertexType> tempBuff(2048);
    tempBuff.reserve( n_parts*4 + 64); // make sure tempBuff is big enough
-   ParticleVertexType *buffPtr = tempBuff.address(); // use direct pointer (faster)
+   ParticleVertexType *buffPtr = tempBuff.data(); // use direct pointer (faster)
    
    if (mDataBlock->orientParticles)
    {
@@ -1834,7 +1834,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
         // do sorted-oriented particles
         if (mDataBlock->sortParticles)
         {
-          SortParticle* partPtr = orderedVector.address();
+          SortParticle* partPtr = orderedVector.data();
           for (U32 i = 0; i < n_parts; i++, partPtr++, buffPtr-=4 )
              setupOriented(partPtr->p, camPos, ambientColor, buffPtr);
         }
@@ -1850,7 +1850,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
         // do sorted-oriented particles
         if (mDataBlock->sortParticles)
         {
-          SortParticle* partPtr = orderedVector.address();
+          SortParticle* partPtr = orderedVector.data();
           for (U32 i = 0; i < n_parts; i++, partPtr++, buffPtr+=4 )
              setupOriented(partPtr->p, camPos, ambientColor, buffPtr);
         }
@@ -1874,7 +1874,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
          // do sorted-oriented particles
          if (mDataBlock->sortParticles)
          {
-            SortParticle* partPtr = orderedVector.address();
+            SortParticle* partPtr = orderedVector.data();
             for (U32 i = 0; i < n_parts; i++, partPtr++, buffPtr-=4 )
                setupAligned(partPtr->p, ambientColor, buffPtr);
          }
@@ -1891,7 +1891,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
          // do sorted-oriented particles
          if (mDataBlock->sortParticles)
          {
-            SortParticle* partPtr = orderedVector.address();
+            SortParticle* partPtr = orderedVector.data();
             for (U32 i = 0; i < n_parts; i++, partPtr++, buffPtr+=4 )
                setupAligned(partPtr->p, ambientColor, buffPtr);
          }
@@ -1925,7 +1925,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
         // do sorted-billboard particles
         if (mDataBlock->sortParticles)
         {
-          SortParticle *partPtr = orderedVector.address();
+          SortParticle *partPtr = orderedVector.data();
           for( U32 i=0; i<n_parts; i++, partPtr++, buffPtr-=4 )
              setupBillboard( partPtr->p, basePoints, camView, ambientColor, buffPtr );
         }
@@ -1941,7 +1941,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
         // do sorted-billboard particles
         if (mDataBlock->sortParticles)
         {
-          SortParticle *partPtr = orderedVector.address();
+          SortParticle *partPtr = orderedVector.data();
           for( U32 i=0; i<n_parts; i++, partPtr++, buffPtr+=4 )
              setupBillboard( partPtr->p, basePoints, camView, ambientColor, buffPtr );
         }
@@ -1965,7 +1965,7 @@ void ParticleEmitter::copyToVB( const Point3F &camPos, const LinearColorF &ambie
    }
    // lock and copy tempBuff to video RAM
    ParticleVertexType *verts = mVertBuff.lock();
-   dMemcpy( verts, tempBuff.address(), n_parts * 4 * sizeof(ParticleVertexType) );
+   dMemcpy( verts, tempBuff.data(), n_parts * 4 * sizeof(ParticleVertexType) );
    mVertBuff.unlock();
    PROFILE_END();
 

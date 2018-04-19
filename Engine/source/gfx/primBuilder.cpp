@@ -85,7 +85,7 @@ GFXVertexBuffer * endToBuffer( U32 &numPrims )
 {
    mVertBuff.set(GFX, mTempVertBuff.size(), GFXBufferTypeVolatile);
    GFXVertexPCT *verts = mVertBuff.lock();
-   dMemcpy( verts, mTempVertBuff.address(), mTempVertBuff.size() * sizeof(GFXVertexPCT) );
+   dMemcpy( verts, mTempVertBuff.data(), mTempVertBuff.size() * sizeof(GFXVertexPCT) );
    mVertBuff.unlock();
 
    VERTEX_SIZE_CHECK();
@@ -191,7 +191,7 @@ void end( bool useGenericShaders )
             GFX->setupGenericShaders( GFXDevice::GSColor );
     }
 
-   const GFXVertexPCT *srcVerts = mTempVertBuff.address();
+   const GFXVertexPCT *srcVerts = mTempVertBuff.data();
    U32 numVerts = mCurVertIndex;
    
    // Make sure we don't have a dirty prim buffer left.

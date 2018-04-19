@@ -137,9 +137,16 @@ public:
    virtual U32 getMaxDynamicVerts() { return MAX_DYNAMIC_VERTS; }
    virtual U32 getMaxDynamicIndices() { return MAX_DYNAMIC_INDICES; }
    
+   // Fences
    GFXFence *createFence();
-   
-   GFXOcclusionQuery* createOcclusionQuery();
+
+	U32 mNumFences;
+	U32 mNextFenceIdx;
+	GFXFence** mFences;
+	virtual void createFences(U32 numFences) override;
+	virtual void waitForFences() override;	
+
+	GFXOcclusionQuery* createOcclusionQuery();
 
    GFXGLStateBlockRef getCurrentStateBlock() { return mCurrentGLStateBlock; }
    

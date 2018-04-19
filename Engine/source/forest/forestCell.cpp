@@ -234,7 +234,7 @@ bool ForestCell::findIndexByKey( ForestItemKey key, U32 *outIndex ) const
          lo = 0,
          hi = mItems.size();
    
-   const ForestItem *items = mItems.address();
+   const ForestItem *items = mItems.data();
 
    while ( lo < hi ) 
    {
@@ -480,9 +480,9 @@ void ForestCell::buildPhysicsRep( Forest *forest )
       if ( !polyList.isEmpty() )
       {
          colShape = PHYSICSMGR->createCollision();
-         if ( !colShape->addTriangleMesh( polyList.mVertexList.address(),
+         if ( !colShape->addTriangleMesh( polyList.mVertexList.data(),
                                           polyList.mVertexList.size(),
-                                          polyList.mIndexList.address(),
+                                          polyList.mIndexList.data(),
                                           polyList.mIndexList.size() / 3,
                                           MatrixF::Identity ) )
          {

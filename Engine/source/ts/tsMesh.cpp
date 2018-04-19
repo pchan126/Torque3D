@@ -296,7 +296,7 @@ const Point3F * TSMesh::getNormals( S32 firstVert )
       for ( S32 i = 0; i < encodedNorms.size(); i++ )
          gNormalStore[i] = decodeNormal( encodedNorms[ i + firstVert ] );
 
-      return gNormalStore.address();
+      return gNormalStore.data();
    }
 
    return &norms[firstVert];
@@ -1066,7 +1066,7 @@ void TSMesh::computeBounds( const MatrixF &transform, Box3F &bounds, S32 frame, 
    }
    else
    {
-      baseVert = verts.address();
+      baseVert = verts.data();
       stride = sizeof(Point3F);
 
       if ( frame < 0 )
@@ -1227,8 +1227,8 @@ void TSSkinMesh::updateSkinBuffer( const Vector<MatrixF> &transforms, U8* buffer
    matrices = &sBoneTransforms[0];
    PROFILE_END();
 
-   const Point3F *inVerts = batchData.initialVerts.address();
-   const Point3F *inNorms = batchData.initialNorms.address();
+   const Point3F *inVerts = batchData.initialVerts.data();
+   const Point3F *inNorms = batchData.initialNorms.data();
 
    AssertFatal(inVerts, "Something went wrong, verts should be valid");
 
@@ -1415,7 +1415,7 @@ void TSSkinMesh::createSkinBatchData()
       }
    }
 
-   batchData.vertexBatchOperations.set(batchOperations.address(), batchOperations.size());
+   batchData.vertexBatchOperations.set(batchOperations.data(), batchOperations.size());
 
    U32 maxValue = 0;
    for (U32 i = 0; i<batchData.vertexBatchOperations.size(); i++)
@@ -1549,12 +1549,12 @@ void TSSkinMesh::computeBounds( const MatrixF &transform, Box3F &bounds, S32 fra
    if (verts.size() != 0)
    {
       // Use unskinned verts
-      TSMesh::computeBounds( verts.address(), verts.size(), sizeof(Point3F), transform, bounds, center, radius );
+      TSMesh::computeBounds( verts.data(), verts.size(), sizeof(Point3F), transform, bounds, center, radius );
    }
    else if (frame <= 0 && batchData.initialVerts.size() > 0)
    {
       // Use unskinned verts
-      TSMesh::computeBounds(batchData.initialVerts.address(), batchData.initialVerts.size(), sizeof(Point3F), transform, bounds, center, radius);
+      TSMesh::computeBounds(batchData.initialVerts.data(), batchData.initialVerts.size(), sizeof(Point3F), transform, bounds, center, radius);
    }
    else
    {
@@ -2083,7 +2083,7 @@ void TSMesh::convertToSingleStrip(	const TSDrawPrimitive *primitivesIn,
             {
                newTris->start = numIndicesOut;
                newTris->numElements = triIndices.size();
-               dMemcpy(&indicesOut[numIndicesOut],triIndices.address(),triIndices.size()*sizeof(U32));
+               dMemcpy(&indicesOut[numIndicesOut],triIndices.data(),triIndices.size()*sizeof(U32));
             }
             numIndicesOut += triIndices.size();
             triIndices.clear();
@@ -2184,7 +2184,7 @@ void TSMesh::convertToSingleStrip(	const TSDrawPrimitive *primitivesIn,
       {
          newTris->start = numIndicesOut;
          newTris->numElements = triIndices.size();
-         dMemcpy(&indicesOut[numIndicesOut],triIndices.address(),triIndices.size()*sizeof(U32));
+         dMemcpy(&indicesOut[numIndicesOut],triIndices.data(),triIndices.size()*sizeof(U32));
       }
 
       numIndicesOut += triIndices.size();
@@ -2232,7 +2232,7 @@ void TSMesh::leaveAsMultipleStrips(	const TSDrawPrimitive *primitivesIn,
             newTris->matIndex |= TSDrawPrimitive::Triangles;
             newTris->start = numIndicesOut;
             newTris->numElements = triIndices.size();
-            dMemcpy(&indicesOut[numIndicesOut],triIndices.address(),triIndices.size()*sizeof(U32));
+            dMemcpy(&indicesOut[numIndicesOut],triIndices.data(),triIndices.size()*sizeof(U32));
          }
          numPrimOut++;
          numIndicesOut += triIndices.size();
@@ -2306,7 +2306,7 @@ void TSMesh::leaveAsMultipleStrips(	const TSDrawPrimitive *primitivesIn,
          newTris->matIndex |= TSDrawPrimitive::Triangles;
          newTris->start = numIndicesOut;
          newTris->numElements = triIndices.size();
-         dMemcpy(&indicesOut[numIndicesOut],triIndices.address(),triIndices.size()*sizeof(U32));
+         dMemcpy(&indicesOut[numIndicesOut],triIndices.data(),triIndices.size()*sizeof(U32));
       }
       numPrimOut++;
       numIndicesOut += triIndices.size();
@@ -2406,7 +2406,7 @@ void TSMesh::dumpPrimitives(U32 startVertex, U32 startIndex, GFXPrimitive *piArr
       *piArray++ = pInfo;
    }
 
-   dCopyArray(ibIndices, indices.address(), indices.size());
+   dCopyArray(ibIndices, indices.data(), indices.size());
 }
 
 void TSMesh::assemble( bool skip )
@@ -2435,21 +2435,21 @@ void TSMesh::assemble( bool skip )
    }
 
    S32 numVerts = tsalloc.get32();
-   S32 *ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smVertsList.address(), skip );
+   S32 *ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smVertsList.data(), skip );
    verts.set( (Point3F*)ptr32, numVerts );
 
    S32 numTVerts = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)smTVertsList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)smTVertsList.data(), skip );
    tverts.set( (Point2F*)ptr32, numTVerts );
 
    if ( TSShape::smReadVersion > 25 )
    {
       numTVerts = tsalloc.get32();
-      ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)smTVerts2List.address(), skip );
+      ptr32 = getSharedData32( parentMesh, 2 * numTVerts, (S32**)smTVerts2List.data(), skip );
       tverts2.set( (Point2F*)ptr32, numTVerts );
 
       S32 numVColors = tsalloc.get32();
-      ptr32 = getSharedData32( parentMesh, numVColors, (S32**)smColorsList.address(), skip );
+      ptr32 = getSharedData32( parentMesh, numVColors, (S32**)smColorsList.data(), skip );
       colors.set( (ColorI*)ptr32, numVColors );
    }
 
@@ -2461,13 +2461,13 @@ void TSMesh::assemble( bool skip )
          tsalloc.getPointer32( numVerts * 3 ); // adva  nce past norms, don't use
       norms.set( NULL, 0 );
 
-      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)smEncodedNormsList.address(), skip );
+      ptr8 = getSharedData8( parentMesh, numVerts, (S8**)smEncodedNormsList.data(), skip );
       encodedNorms.set( ptr8, numVerts );
    }
    else if ( TSShape::smReadVersion > 21 )
    {
       // we have encoded normals but we don't want to use them...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smNormsList.address(), skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smNormsList.data(), skip );
       norms.set( (Point3F*)ptr32, numVerts );
 
       if ( parentMesh < 0 )
@@ -2477,7 +2477,7 @@ void TSMesh::assemble( bool skip )
    else
    {
       // no encoded normals...
-      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smNormsList.address(), skip );
+      ptr32 = getSharedData32( parentMesh, 3 * numVerts, (S32**)smNormsList.data(), skip );
       norms.set( (Point3F*)ptr32, numVerts );
       encodedNorms.set( NULL, 0 );
    }
@@ -2638,29 +2638,29 @@ void TSMesh::disassemble()
       // verts...
       tsalloc.set32(verts.size());
       if (parentMesh < 0)
-         tsalloc.copyToBuffer32((S32*)verts.address(), 3 * verts.size()); // if no parent mesh, then save off our verts
+         tsalloc.copyToBuffer32((S32*)verts.data(), 3 * verts.size()); // if no parent mesh, then save off our verts
 
       // tverts...
       tsalloc.set32(tverts.size());
       if (parentMesh < 0)
-         tsalloc.copyToBuffer32((S32*)tverts.address(), 2 * tverts.size()); // if no parent mesh, then save off our tverts
+         tsalloc.copyToBuffer32((S32*)tverts.data(), 2 * tverts.size()); // if no parent mesh, then save off our tverts
 
       if (TSShape::smVersion > 25)
       {
          // tverts2...
          tsalloc.set32(tverts2.size());
          if (parentMesh < 0)
-            tsalloc.copyToBuffer32((S32*)tverts2.address(), 2 * tverts2.size()); // if no parent mesh, then save off our tverts
+            tsalloc.copyToBuffer32((S32*)tverts2.data(), 2 * tverts2.size()); // if no parent mesh, then save off our tverts
 
                                                                                  // colors
          tsalloc.set32(colors.size());
          if (parentMesh < 0)
-            tsalloc.copyToBuffer32((S32*)colors.address(), colors.size()); // if no parent mesh, then save off our tverts
+            tsalloc.copyToBuffer32((S32*)colors.data(), colors.size()); // if no parent mesh, then save off our tverts
       }
 
       // norms...
       if (parentMesh < 0) // if no parent mesh, then save off our norms
-         tsalloc.copyToBuffer32((S32*)norms.address(), 3 * norms.size()); // norms.size()==verts.size() or error...
+         tsalloc.copyToBuffer32((S32*)norms.data(), 3 * norms.size()); // norms.size()==verts.size() or error...
 
                                                                           // encoded norms...
       if (parentMesh < 0)
@@ -2685,8 +2685,8 @@ void TSMesh::disassemble()
          if ( (prim.matIndex & TSDrawPrimitive::TypeMask) == TSDrawPrimitive::Triangles )
          {
             TriListOpt::OptimizeTriangleOrdering(verts.size(), prim.numElements,
-               indices.address() + prim.start, tmpIdxs.address());
-            dCopyArray(indices.address() + prim.start, tmpIdxs.address(), 
+               indices.data() + prim.start, tmpIdxs.address());
+            dCopyArray(indices.data() + prim.start, tmpIdxs.address(), 
                prim.numElements);
          }
       }
@@ -2696,11 +2696,11 @@ void TSMesh::disassemble()
    {
       // primitives...
       tsalloc.set32( primitives.size() );
-      tsalloc.copyToBuffer32((S32*)primitives.address(),3*primitives.size());
+      tsalloc.copyToBuffer32((S32*)primitives.data(),3*primitives.size());
 
       // indices...
       tsalloc.set32(indices.size());
-      tsalloc.copyToBuffer32((S32*)indices.address(),indices.size());
+      tsalloc.copyToBuffer32((S32*)indices.data(),indices.size());
    }
    else
    {
@@ -2721,7 +2721,7 @@ void TSMesh::disassemble()
       Vector<S16> s16_indices(indices.size());
       for (S32 i=0; i<indices.size(); i++)
          s16_indices.push_back((S16)indices[i]);
-      tsalloc.copyToBuffer16(s16_indices.address(), s16_indices.size());
+      tsalloc.copyToBuffer16(s16_indices.data(), s16_indices.size());
    }
 
    // merge indices...DEPRECATED
@@ -2760,7 +2760,7 @@ void TSSkinMesh::assemble( bool skip )
    {
       sz = tsalloc.get32();
       S32 numVerts = sz;
-      ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smVertsList.address(), skip);
+      ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smVertsList.data(), skip);
       batchData.initialVerts.set((Point3F*)ptr32, sz);
 
       S8 * ptr8;
@@ -2771,7 +2771,7 @@ void TSSkinMesh::assemble( bool skip )
             tsalloc.getPointer32(numVerts * 3); // advance past norms, don't use
          batchData.initialNorms.set(NULL, 0);
 
-         ptr8 = getSharedData8(parentMesh, numVerts, (S8**)smEncodedNormsList.address(), skip);
+         ptr8 = getSharedData8(parentMesh, numVerts, (S8**)smEncodedNormsList.data(), skip);
          encodedNorms.set(ptr8, numVerts);
          // Note: we don't set the encoded normals flag because we handle them in updateSkin and
          //       hide the fact that we are using them from base class (TSMesh)
@@ -2779,7 +2779,7 @@ void TSSkinMesh::assemble( bool skip )
       else if (TSShape::smReadVersion > 21)
       {
          // we have encoded normals but we don't want to use them...
-         ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smNormsList.address(), skip);
+         ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smNormsList.data(), skip);
          batchData.initialNorms.set((Point3F*)ptr32, numVerts);
 
          if (parentMesh < 0)
@@ -2790,7 +2790,7 @@ void TSSkinMesh::assemble( bool skip )
       else
       {
          // no encoded normals...
-         ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smNormsList.address(), skip);
+         ptr32 = getSharedData32(parentMesh, 3 * numVerts, (S32**)smNormsList.data(), skip);
          batchData.initialNorms.set((Point3F*)ptr32, numVerts);
          encodedNorms.set(NULL, 0);
       }
@@ -2815,21 +2815,21 @@ void TSSkinMesh::assemble( bool skip )
    }
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, 16 * sz, (S32**)smInitTransformList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, 16 * sz, (S32**)smInitTransformList.data(), skip );
    batchData.initialTransforms.set( ptr32, sz );
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)smVertexIndexList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)smVertexIndexList.data(), skip );
    vertexIndex.set( ptr32, sz );
 
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)smBoneIndexList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)smBoneIndexList.data(), skip );
    boneIndex.set( ptr32, sz );
 
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)smWeightList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)smWeightList.data(), skip );
    weight.set( (F32*)ptr32, sz );
 
    sz = tsalloc.get32();
-   ptr32 = getSharedData32( parentMesh, sz, (S32**)smNodeIndexList.address(), skip );
+   ptr32 = getSharedData32( parentMesh, sz, (S32**)smNodeIndexList.data(), skip );
    batchData.nodeIndex.set( ptr32, sz );
 
    tsalloc.checkGuard();
@@ -2885,10 +2885,10 @@ void TSSkinMesh::disassemble()
       // if we have no parent mesh, then save off our verts & norms
       if (parentMesh < 0)
       {
-         tsalloc.copyToBuffer32((S32*)verts.address(), 3 * verts.size());
+         tsalloc.copyToBuffer32((S32*)verts.data(), 3 * verts.size());
 
          // no longer do this here...let tsmesh handle this
-         tsalloc.copyToBuffer32((S32*)norms.address(), 3 * norms.size());
+         tsalloc.copyToBuffer32((S32*)norms.data(), 3 * norms.size());
 
          // if no parent mesh, compute encoded normals and copy over
          for (S32 i = 0; i < norms.size(); i++)
@@ -2901,17 +2901,17 @@ void TSSkinMesh::disassemble()
 
    tsalloc.set32( batchData.initialTransforms.size() );
    if ( parentMesh < 0 )
-      tsalloc.copyToBuffer32( (S32*)batchData.initialTransforms.address(), batchData.initialTransforms.size() * 16 );
+      tsalloc.copyToBuffer32( (S32*)batchData.initialTransforms.data(), batchData.initialTransforms.size() * 16 );
 
    if (!mVertexData.isReady())
    {
       tsalloc.set32(vertexIndex.size());
 
-      tsalloc.copyToBuffer32((S32*)vertexIndex.address(), vertexIndex.size());
+      tsalloc.copyToBuffer32((S32*)vertexIndex.data(), vertexIndex.size());
 
-      tsalloc.copyToBuffer32((S32*)boneIndex.address(), boneIndex.size());
+      tsalloc.copyToBuffer32((S32*)boneIndex.data(), boneIndex.size());
 
-      tsalloc.copyToBuffer32((S32*)weight.address(), weight.size());
+      tsalloc.copyToBuffer32((S32*)weight.data(), weight.size());
    }
    else
    {
@@ -2922,17 +2922,17 @@ void TSSkinMesh::disassemble()
    {
       if (parentMesh < 0)
       {
-         tsalloc.copyToBuffer32((S32*)vertexIndex.address(), vertexIndex.size());
+         tsalloc.copyToBuffer32((S32*)vertexIndex.data(), vertexIndex.size());
 
-         tsalloc.copyToBuffer32((S32*)boneIndex.address(), boneIndex.size());
+         tsalloc.copyToBuffer32((S32*)boneIndex.data(), boneIndex.size());
 
-         tsalloc.copyToBuffer32((S32*)weight.address(), weight.size());
+         tsalloc.copyToBuffer32((S32*)weight.data(), weight.size());
       }
    }
 
    tsalloc.set32( batchData.nodeIndex.size() );
    if ( parentMesh < 0 )
-      tsalloc.copyToBuffer32( (S32*)batchData.nodeIndex.address(), batchData.nodeIndex.size() );
+      tsalloc.copyToBuffer32( (S32*)batchData.nodeIndex.data(), batchData.nodeIndex.size() );
 
    tsalloc.setGuard();
 }
@@ -3022,8 +3022,8 @@ void TSMesh::createTangents(const Vector<Point3F> &_verts, const Vector<Point3F>
    Vector<Point3F> tan0;
    tan0.setSize( numVerts * 2 );
 
-   Point3F *tan1 = tan0.address() + numVerts;
-   dMemset( tan0.address(), 0, sizeof(Point3F) * 2 * numVerts );
+   Point3F *tan1 = tan0.data() + numVerts;
+   dMemset( tan0.data(), 0, sizeof(Point3F) * 2 * numVerts );
    
    U32   numPrimatives = primitives.size();
 
@@ -3044,7 +3044,7 @@ void TSMesh::createTangents(const Vector<Point3F> &_verts, const Vector<Point3F>
       case GFXTriangleList:
          {
             for( U32 j = 0; j < numElements; j += 3 )
-               findTangent( baseIdx[j], baseIdx[j + 1], baseIdx[j + 2], tan0.address(), tan1, _verts );
+               findTangent( baseIdx[j], baseIdx[j + 1], baseIdx[j + 2], tan0.data(), tan1, _verts );
             break;
          }
 
@@ -3054,7 +3054,7 @@ void TSMesh::createTangents(const Vector<Point3F> &_verts, const Vector<Point3F>
             p2Index = baseIdx[1];
             for( U32 j = 2; j < numElements; j++ )
             {
-               findTangent( p1Index, p2Index, baseIdx[j], tan0.address(), tan1, _verts );
+               findTangent( p1Index, p2Index, baseIdx[j], tan0.data(), tan1, _verts );
                p1Index = p2Index;
                p2Index = baseIdx[j];
             }

@@ -798,7 +798,7 @@ bool TerrainBlock::castRayBlock( const Point3F &pStart,
 
    while(stackSize--)
    {
-      TerrLOSStackNode *sn = stack.address() + stackSize;
+      TerrLOSStackNode *sn = stack.data() + stackSize;
       U32 level  = sn->level;
       F32 startT = sn->startT;
       F32 endT   = sn->endT;

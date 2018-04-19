@@ -242,7 +242,7 @@ void PostEffect::EffectConst::setToBuffer( GFXShaderConstBufferRef buff )
             Con::setData( TypePoint4F, &valArray.last(), 0, 1, &tmpCStr );
          }
 
-         AlignedArray<Point4F> rectData( valArray.size(), sizeof( Point4F ), (U8*)valArray.address(), false );
+         AlignedArray<Point4F> rectData( valArray.size(), sizeof( Point4F ), (U8*)valArray.data(), false );
          buff->set( mHandle, rectData );
       }
       else

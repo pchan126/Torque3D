@@ -751,7 +751,7 @@ void AITurretShape::_performScan()
    {
       // Sort the targets
       comparePoint = getPosition();
-      dQsort(mPotentialTargets.address(),mPotentialTargets.size(),sizeof(SimObjectList::value_type),_sortCallback);
+      dQsort(mPotentialTargets.data(),mPotentialTargets.size(),sizeof(SimObjectList::value_type),_sortCallback);
 
       // Go through the targets in order to find one that is not blocked from view
       Point3F start;

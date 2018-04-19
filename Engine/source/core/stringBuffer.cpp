@@ -132,7 +132,7 @@ void StringBuffer::set(const StringBuffer *in)
 {
    // Copy the vector.
    mBuffer.setSize(in->mBuffer.size());
-   dMemcpy(mBuffer.address(), in->mBuffer.address(), sizeof(UTF16) * mBuffer.size());
+   dMemcpy(mBuffer.data(), in->mBuffer.data(), sizeof(UTF16) * mBuffer.size());
    mDirty8 = true;
 }
 
@@ -153,7 +153,7 @@ void StringBuffer::set(const UTF8 *in)
 
    // Otherwise, we've a copy to do. (This might not be strictly necessary.)
    mBuffer.setSize(dStrlen(tmpBuff)+1);
-   dMemcpy(mBuffer.address(), tmpBuff, sizeof(UTF16) * mBuffer.size());
+   dMemcpy(mBuffer.data(), tmpBuff, sizeof(UTF16) * mBuffer.size());
    mBuffer.compact();
    AssertFatal(mBuffer.last() == 0, "StringBuffer::set UTF8 - not a null terminated string!");
    mDirty8 = true;
@@ -165,7 +165,7 @@ void StringBuffer::set(const UTF16 *in)
    // Just copy, it's already UTF16.
    U32 newsize = dStrlen(in);
    mBuffer.setSize(newsize + 1);
-   dMemcpy(mBuffer.address(), in, sizeof(UTF16) * newsize);
+   dMemcpy(mBuffer.data(), in, sizeof(UTF16) * newsize);
    mBuffer[newsize] = '\0';
    mBuffer.compact();
    AssertFatal(mBuffer.last() == 0, "StringBuffer::set UTF16 - not a null terminated string!");
@@ -176,7 +176,7 @@ void StringBuffer::set(const UTF16 *in)
 
 void StringBuffer::append(const StringBuffer &in)
 {
-   append(in.mBuffer.address(), in.length());
+   append(in.mBuffer.data(), in.length());
 }
 
 void StringBuffer::append(const UTF8* in)
@@ -221,7 +221,7 @@ void StringBuffer::append(const UTF16* in, const U32 len)
 
 void StringBuffer::insert(const U32 charOffset, const StringBuffer &in)
 {
-   insert(charOffset, in.mBuffer.address(), in.length());
+   insert(charOffset, in.mBuffer.data(), in.length());
 }
 
 void StringBuffer::insert(const U32 charOffset, const UTF8* in)
@@ -359,7 +359,7 @@ void StringBuffer::getCopy8(UTF8 *buff, const U32 buffSize) const
 {
    incRequestCount8();
    AssertFatal(mBuffer.last() == 0, "StringBuffer::get UTF8 - not a null terminated string!");
-   convertUTF16toUTF8N(mBuffer.address(), buff, buffSize);
+   convertUTF16toUTF8N(mBuffer.data(), buff, buffSize);
 }
 
 void StringBuffer::getCopy(UTF16 *buff, const U32 buffSize) const
@@ -367,7 +367,7 @@ void StringBuffer::getCopy(UTF16 *buff, const U32 buffSize) const
    incRequestCount16();
    // Just copy it out.
    AssertFatal(mBuffer.last() == 0, "StringBuffer::get UTF8 - not a null terminated string!");
-   dMemcpy(buff, mBuffer.address(), sizeof(UTF16) * getMin(buffSize, (U32)mBuffer.size()));
+   dMemcpy(buff, mBuffer.data(), sizeof(UTF16) * getMin(buffSize, (U32)mBuffer.size()));
    // ensure null termination.
    buff[buffSize-1] = NULL;
 }
@@ -377,7 +377,7 @@ UTF8* StringBuffer::createCopy8() const
    incRequestCount8();
    // convert will create a buffer of the appropriate size for a null terminated
    // input string.
-   UTF8* out = createUTF8string(mBuffer.address());
+   UTF8* out = createUTF8string(mBuffer.data());
    return out;
 }
 
@@ -390,7 +390,7 @@ const UTF16* StringBuffer::getPtr() const
    // not be modified out from under you.
    // the key here is, you avoid yet another data copy. data copy is slow on
    // most modern hardware.
-   return mBuffer.address();
+   return mBuffer.data();
 }
 
 const UTF8* StringBuffer::getPtr8() const
@@ -401,14 +401,14 @@ const UTF8* StringBuffer::getPtr8() const
    if(mDirty8)
       // force const cheating.
       const_cast<StringBuffer*>(this)->updateBuffer8();
-   return mBuffer8.address();
+   return mBuffer8.data();
 }
 
 void StringBuffer::updateBuffer8()
 {
    U32 slackLen = getUTF8BufferSizeEstimate();
    mBuffer8.setSize(slackLen);
-   U32 len = convertUTF16toUTF8N(mBuffer.address(), mBuffer8.address(), slackLen);
+   U32 len = convertUTF16toUTF8N(mBuffer.data(), mBuffer8.data(), slackLen);
    mBuffer8.setSize(len+1);
    mBuffer8.compact();
    mDirty8 = false;

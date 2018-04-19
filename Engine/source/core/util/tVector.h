@@ -145,6 +145,7 @@ class Vector
 
    U32  memSize() const;
    T*   address() const;
+   T*   data() const { return address(); };
    U32  setSize(U32);
    void increment();
    void decrement();
@@ -455,15 +456,8 @@ template<class T> inline void Vector<T>::erase_fast(U32 index)
 
 template<class T> inline bool Vector<T>::contains(const T& x) const
 {
-	const_iterator i = begin();
-	while (i != end())
-	{
-		if (*i == x)
-			return true;
-
-		i++;
-	}
-
+	if (std::find( begin(), end(), x ) != end())
+		return true;
 	return false;
 }
 

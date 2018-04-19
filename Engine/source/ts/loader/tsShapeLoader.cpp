@@ -534,8 +534,8 @@ void TSShapeLoader::generateSkins()
       skin->lookupSkinData();
 
       // Just copy initial verts and norms for now
-      skin->initialVerts.set(skin->points.address(), skin->vertsPerFrame);
-      skin->initialNorms.set(skin->normals.address(), skin->vertsPerFrame);
+      skin->initialVerts.set(skin->points.data(), skin->vertsPerFrame);
+      skin->initialNorms.set(skin->normals.data(), skin->vertsPerFrame);
 
       // Map bones to nodes
       skin->nodeIndex.setSize(skin->bones.size());

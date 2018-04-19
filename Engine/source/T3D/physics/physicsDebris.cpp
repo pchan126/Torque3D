@@ -630,7 +630,7 @@ void PhysicsDebris::_createFragments()
    shape->buildColShapes( false, Point3F::One, &infoList );
       
    mFragments.setSize( infoList.size() );
-   dMemset( mFragments.address(), 0, mFragments.memSize() );
+   dMemset( mFragments.data(), 0, mFragments.memSize() );
 
    const Point3F damageDir( 0, 0, 1 );
 

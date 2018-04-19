@@ -61,7 +61,7 @@ SceneCullingState::SceneCullingState( SceneManager* sceneManager, const SceneCam
 
    const U32 numZones = sceneManager->getZoneManager()->getNumZones();
    mZoneStates.setSize( numZones );
-   dMemset( mZoneStates.address(), 0, sizeof( SceneZoneCullingState ) * numZones );
+   dMemset( mZoneStates.data(), 0, sizeof( SceneZoneCullingState ) * numZones );
 
    // Allocate the zone visibility flags.
 
@@ -140,7 +140,7 @@ void SceneCullingState::addOccluder( SceneObject* object )
 
    SceneCullingVolume volume;
    if( !createCullingVolume(
-         silhouette.address(),
+         silhouette.data(),
          silhouette.size(),
          SceneCullingVolume::Occluder,
          volume ) )

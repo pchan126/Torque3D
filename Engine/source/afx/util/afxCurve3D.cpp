@@ -106,7 +106,7 @@ void afxCurve3D::sort( )
 
 	//Con::printf( "*** pre-sort" );
 	//std::sort( points.begin(), points.end(), afxCurve3D::compare_CurvePoint );
-	dQsort( points.address(), points.size(), sizeof(CurvePoint), afxCurve3D::compare_CurvePoint );
+	dQsort( points.data(), points.size(), sizeof(CurvePoint), afxCurve3D::compare_CurvePoint );
 	//Con::printf( "*** post-sort" );
 
 	start_value = points[0].point;

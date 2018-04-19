@@ -69,7 +69,7 @@ namespace Win32
 
       // for use in the thread itself
       U32      getNumHandles() const { return mHandleList.size(); }
-      HANDLE   *getHANDLES() { return mHandleList.address(); }
+      HANDLE   *getHANDLES() { return mHandleList.data(); }
 
    private:
       virtual void   internalProcessOnce();
@@ -205,7 +205,7 @@ void  Win32FileSystemChangeNotifier::internalProcessOnce()
    {
       U32 numHandles = getMin( (U32)MAXIMUM_WAIT_OBJECTS, (U32)mHandleList.size() - i );
 
-      DWORD dwWaitStatus = WaitForMultipleObjects( numHandles, mHandleList.address()+i, FALSE, 0);
+      DWORD dwWaitStatus = WaitForMultipleObjects( numHandles, mHandleList.data()+i, FALSE, 0);
       if ( dwWaitStatus == WAIT_FAILED || dwWaitStatus == WAIT_TIMEOUT )
          continue;
 

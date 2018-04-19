@@ -1278,7 +1278,7 @@ void SceneContainer::initRadiusSearch(const Point3F& searchPoint,
    if (mSearchList.size() != 0)
    {
       sgSortReferencePoint = mSearchReferencePoint;
-      dQsort(mSearchList.address(), mSearchList.size(),
+      dQsort(mSearchList.data(), mSearchList.size(),
              sizeof(SimObjectPtr<SceneObject>*), cmpSearchPointers);
    }
 }
@@ -1300,7 +1300,7 @@ void SceneContainer::initTypeSearch(const U32      searchMask)
    if (mSearchList.size() != 0)
    {
       sgSortReferencePoint = mSearchReferencePoint;
-      dQsort(mSearchList.address(), mSearchList.size(),
+      dQsort(mSearchList.data(), mSearchList.size(),
              sizeof(SimObjectPtr<SceneObject>*), cmpSearchPointers);
    }
 }

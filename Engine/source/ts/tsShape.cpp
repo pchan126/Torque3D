@@ -1345,7 +1345,7 @@ void TSShape::assembleShape()
    // frame triggers
    ptr32 = tsalloc.getPointer32(numTriggers*2);
    triggers.setSize(numTriggers);
-   dMemcpy(triggers.address(),ptr32,sizeof(S32)*numTriggers*2);
+   dMemcpy(triggers.data(),ptr32,sizeof(S32)*numTriggers*2);
 
    tsalloc.checkGuard();
 
@@ -1521,26 +1521,26 @@ void TSShape::assembleShape()
       // fill in location of verts, tverts, and normals for detail levels
       if (mesh && meshType!=TSMesh::DecalMeshType)
       {
-         TSMesh::smVertsList[i]  = mesh->verts.address();
-         TSMesh::smTVertsList[i] = mesh->tverts.address();
+         TSMesh::smVertsList[i]  = mesh->verts.data();
+         TSMesh::smTVertsList[i] = mesh->tverts.data();
          if (smReadVersion >= 26)
          {
-            TSMesh::smTVerts2List[i] = mesh->tverts2.address();
-            TSMesh::smColorsList[i] = mesh->colors.address();
+            TSMesh::smTVerts2List[i] = mesh->tverts2.data();
+            TSMesh::smColorsList[i] = mesh->colors.data();
          }
-         TSMesh::smNormsList[i]  = mesh->norms.address();
-         TSMesh::smEncodedNormsList[i] = mesh->encodedNorms.address();
+         TSMesh::smNormsList[i]  = mesh->norms.data();
+         TSMesh::smEncodedNormsList[i] = mesh->encodedNorms.data();
          TSMesh::smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
          if (meshType==TSMesh::SkinMeshType)
          {
             TSSkinMesh * skin = (TSSkinMesh*)mesh;
-            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.address();
-            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.address();
-            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.address();
-            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.address();
-            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.address();
-            TSSkinMesh::smWeightList[i] = skin->weight.address();
-            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.address();
+            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.data();
+            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.data();
+            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.data();
+            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.data();
+            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.data();
+            TSSkinMesh::smWeightList[i] = skin->weight.data();
+            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.data();
          }
       }
    }
@@ -1605,27 +1605,27 @@ void TSShape::assembleShape()
       {
          bool skip = i<detFirstSkin[skipDL];
          TSSkinMesh * skin = (TSSkinMesh*)TSMesh::assembleMesh(TSMesh::SkinMeshType,skip);
-         if (meshes.address())
+         if (meshes.data())
          {
             // add pointer to skin in shapes list of meshes
             // we reserved room for this above...
-            meshes.set(meshes.address(),meshes.size()+1);
+            meshes.set(meshes.data(),meshes.size()+1);
             meshes[meshes.size()-1] = skip ? NULL : skin;
          }
 
          // fill in location of verts, tverts, and normals for shared detail levels
          if (skin)
          {
-            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.address();
-            TSMesh::smTVertsList[i] = skin->tverts.address();
-            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.address();
-            TSMesh::smEncodedNormsList[i]  = skin->encodedNorms.address();
+            TSMesh::smVertsList[i]  = skin->batchData.initialVerts.data();
+            TSMesh::smTVertsList[i] = skin->tverts.data();
+            TSMesh::smNormsList[i]  = skin->batchData.initialNorms.data();
+            TSMesh::smEncodedNormsList[i]  = skin->encodedNorms.data();
             TSMesh::smDataCopied[i] = !skip; // as long as we didn't skip this mesh, the data should be in shape now
-            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.address();
-            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.address();
-            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.address();
-            TSSkinMesh::smWeightList[i] = skin->weight.address();
-            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.address();
+            TSSkinMesh::smInitTransformList[i] = skin->batchData.initialTransforms.data();
+            TSSkinMesh::smVertexIndexList[i] = skin->vertexIndex.data();
+            TSSkinMesh::smBoneIndexList[i] = skin->boneIndex.data();
+            TSSkinMesh::smWeightList[i] = skin->weight.data();
+            TSSkinMesh::smNodeIndexList[i] = skin->batchData.nodeIndex.data();
          }
       }
 
@@ -1678,48 +1678,48 @@ void TSShape::disassembleShape()
    tsalloc.setGuard();
 
    // copy various vectors...
-   tsalloc.copyToBuffer32((S32*)nodes.address(),numNodes*5);
+   tsalloc.copyToBuffer32((S32*)nodes.data(),numNodes*5);
    tsalloc.setGuard();
-   tsalloc.copyToBuffer32((S32*)objects.address(),numObjects*6);
+   tsalloc.copyToBuffer32((S32*)objects.data(),numObjects*6);
    tsalloc.setGuard();
    // DEPRECATED: no copy decals
    tsalloc.setGuard();
    tsalloc.copyToBuffer32(0,0); // DEPRECATED: ifl materials!
    tsalloc.setGuard();
-   tsalloc.copyToBuffer32((S32*)subShapeFirstNode.address(),numSubShapes);
-   tsalloc.copyToBuffer32((S32*)subShapeFirstObject.address(),numSubShapes);
+   tsalloc.copyToBuffer32((S32*)subShapeFirstNode.data(),numSubShapes);
+   tsalloc.copyToBuffer32((S32*)subShapeFirstObject.data(),numSubShapes);
    tsalloc.copyToBuffer32(0, numSubShapes); // DEPRECATED: no copy subShapeFirstDecal
    tsalloc.setGuard();
-   tsalloc.copyToBuffer32((S32*)subShapeNumNodes.address(),numSubShapes);
-   tsalloc.copyToBuffer32((S32*)subShapeNumObjects.address(),numSubShapes);
+   tsalloc.copyToBuffer32((S32*)subShapeNumNodes.data(),numSubShapes);
+   tsalloc.copyToBuffer32((S32*)subShapeNumObjects.data(),numSubShapes);
    tsalloc.copyToBuffer32(0, numSubShapes); // DEPRECATED: no copy subShapeNumDecals
    tsalloc.setGuard();
 
    // default transforms...
-   tsalloc.copyToBuffer16((S16*)defaultRotations.address(),numNodes*4);
-   tsalloc.copyToBuffer32((S32*)defaultTranslations.address(),numNodes*3);
+   tsalloc.copyToBuffer16((S16*)defaultRotations.data(),numNodes*4);
+   tsalloc.copyToBuffer32((S32*)defaultTranslations.data(),numNodes*3);
 
    // animated transforms...
-   tsalloc.copyToBuffer16((S16*)nodeRotations.address(),numNodeRotations*4);
-   tsalloc.copyToBuffer32((S32*)nodeTranslations.address(),numNodeTranslations*3);
+   tsalloc.copyToBuffer16((S16*)nodeRotations.data(),numNodeRotations*4);
+   tsalloc.copyToBuffer32((S32*)nodeTranslations.data(),numNodeTranslations*3);
 
    tsalloc.setGuard();
 
    // ...with scale
-   tsalloc.copyToBuffer32((S32*)nodeUniformScales.address(),numNodeUniformScales);
-   tsalloc.copyToBuffer32((S32*)nodeAlignedScales.address(),numNodeAlignedScales*3);
-   tsalloc.copyToBuffer32((S32*)nodeArbitraryScaleFactors.address(),numNodeArbitraryScales*3);
-   tsalloc.copyToBuffer16((S16*)nodeArbitraryScaleRots.address(),numNodeArbitraryScales*4);
+   tsalloc.copyToBuffer32((S32*)nodeUniformScales.data(),numNodeUniformScales);
+   tsalloc.copyToBuffer32((S32*)nodeAlignedScales.data(),numNodeAlignedScales*3);
+   tsalloc.copyToBuffer32((S32*)nodeArbitraryScaleFactors.data(),numNodeArbitraryScales*3);
+   tsalloc.copyToBuffer16((S16*)nodeArbitraryScaleRots.data(),numNodeArbitraryScales*4);
 
    tsalloc.setGuard();
 
-   tsalloc.copyToBuffer32((S32*)groundTranslations.address(),3*numGroundFrames);
-   tsalloc.copyToBuffer16((S16*)groundRotations.address(),4*numGroundFrames);
+   tsalloc.copyToBuffer32((S32*)groundTranslations.data(),3*numGroundFrames);
+   tsalloc.copyToBuffer16((S16*)groundRotations.data(),4*numGroundFrames);
 
    tsalloc.setGuard();
 
    // object states..
-   tsalloc.copyToBuffer32((S32*)objectStates.address(),numObjectStates*3);
+   tsalloc.copyToBuffer32((S32*)objectStates.data(),numObjectStates*3);
    tsalloc.setGuard();
 
    // decal states...
@@ -1727,14 +1727,14 @@ void TSShape::disassembleShape()
    tsalloc.setGuard();
 
    // frame triggers
-   tsalloc.copyToBuffer32((S32*)triggers.address(),numTriggers*2);
+   tsalloc.copyToBuffer32((S32*)triggers.data(),numTriggers*2);
    tsalloc.setGuard();
 
    // details
    if (TSShape::smVersion > 25)
    {
       U32 alignedSize32 = sizeof( Detail ) / 4;
-      tsalloc.copyToBuffer32((S32*)details.address(),numDetails * alignedSize32 );
+      tsalloc.copyToBuffer32((S32*)details.data(),numDetails * alignedSize32 );
    }
    else
    {
@@ -2288,7 +2288,7 @@ void TSShape::computeAccelerator(S32 dl)
    detailCollisionAccelerators[dl] = accel;
    accel->numVerts    = cf.mVertexList.size();
    accel->vertexList  = new Point3F[accel->numVerts];
-   dMemcpy(accel->vertexList, cf.mVertexList.address(), sizeof(Point3F) * accel->numVerts);
+   dMemcpy(accel->vertexList, cf.mVertexList.data(), sizeof(Point3F) * accel->numVerts);
 
    accel->normalList = new Point3F[cf.mFaceList.size()];
    for (i = 0; i < cf.mFaceList.size(); i++)

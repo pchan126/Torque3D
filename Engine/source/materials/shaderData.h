@@ -63,7 +63,13 @@ protected:
 
    FileName mOGLPixelShaderName;
 
-   /// A semicolon, tab, or newline delimited string of case
+   FileName mSpirvVertexShaderName;
+
+   FileName mSpirvPixelShaderName;
+
+   String mVertString;
+
+	/// A semicolon, tab, or newline delimited string of case
    /// sensitive defines that are passed to the shader compiler.
    ///
    /// For example:

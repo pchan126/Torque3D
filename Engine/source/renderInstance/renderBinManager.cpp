@@ -27,6 +27,7 @@
 #include "materials/matInstance.h"
 #include "scene/sceneManager.h"
 #include "console/engineAPI.h"
+#include <algorithm>
 
 
 IMPLEMENT_CONOBJECT(RenderBinManager);
@@ -41,6 +42,7 @@ RenderBinManager::RenderBinManager( const RenderInstType& ritype, F32 renderOrde
 {
    VECTOR_SET_ASSOCIATION( mElementList );
    mElementList.reserve( 2048 );
+	render_bin_impl = GFX->makeRenderBinImpl(this);
 }
 
 
@@ -82,7 +84,7 @@ void RenderBinManager::notifyType( const RenderInstType &type )
    // Avoid duplicate types.
    if (  !type.isValid() ||
          mRenderInstType == type ||
-         mOtherTypes.contains( type ) )
+         ( std::find(mOtherTypes.begin(), mOtherTypes.end(), type ) != mOtherTypes.end()))
       return;
 
    mOtherTypes.push_back( type );
@@ -100,8 +102,8 @@ void RenderBinManager::setRenderPass( RenderPassManager *rpm )
       if ( mRenderInstType.isValid() )
          mRenderPass->getAddSignal(mRenderInstType).remove( this, &RenderBinManager::addElement );
 
-      for ( U32 i=0; i < mOtherTypes.size(); i++ )
-         mRenderPass->getAddSignal(mOtherTypes[i]).remove( this, &RenderBinManager::addElement );         
+      for (const auto& itr : mOtherTypes )
+         mRenderPass->getAddSignal(itr).remove( this, &RenderBinManager::addElement );         
    }
 
    mRenderPass = rpm;
@@ -111,8 +113,8 @@ void RenderBinManager::setRenderPass( RenderPassManager *rpm )
       if ( mRenderInstType.isValid() )
          mRenderPass->getAddSignal(mRenderInstType).notify( this, &RenderBinManager::addElement, mProcessAddOrder );
 
-      for ( U32 i=0; i < mOtherTypes.size(); i++ )
-         mRenderPass->getAddSignal(mOtherTypes[i]).notify( this, &RenderBinManager::addElement, mProcessAddOrder );
+      for (const auto& itr : mOtherTypes )
+         mRenderPass->getAddSignal(itr).notify( this, &RenderBinManager::addElement, mProcessAddOrder );
    }
 }
 
@@ -138,7 +140,7 @@ void RenderBinManager::clear()
 
 void RenderBinManager::sort()
 {
-   dQsort( mElementList.address(), mElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
+   dQsort( mElementList.data(), mElementList.size(), sizeof(MainSortElem), cmpKeyFunc);
 }
 
 S32 FN_CDECL RenderBinManager::cmpKeyFunc(const void* p1, const void* p2)

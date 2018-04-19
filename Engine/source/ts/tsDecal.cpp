@@ -89,16 +89,16 @@ void TSDecalMesh::assemble(bool)
 void TSDecalMesh::disassemble()
 {
    tsalloc.set32(primitives.size());
-   tsalloc.copyToBuffer32((S32*)primitives.address(),primitives.size());
+   tsalloc.copyToBuffer32((S32*)primitives.data(),primitives.size());
 
    tsalloc.set32(indices.size());
-   tsalloc.copyToBuffer32((S32*)indices.address(),indices.size());
+   tsalloc.copyToBuffer32((S32*)indices.data(),indices.size());
 
    tsalloc.set32(startPrimitive.size());
-   tsalloc.copyToBuffer32((S32*)startPrimitive.address(),startPrimitive.size());
+   tsalloc.copyToBuffer32((S32*)startPrimitive.data(),startPrimitive.size());
 
-   tsalloc.copyToBuffer32((S32*)texgenS.address(),texgenS.size()*4);
-   tsalloc.copyToBuffer32((S32*)texgenT.address(),texgenT.size()*4);
+   tsalloc.copyToBuffer32((S32*)texgenS.data(),texgenS.size()*4);
+   tsalloc.copyToBuffer32((S32*)texgenT.data(),texgenT.size()*4);
 
    tsalloc.set32(materialIndex);
 

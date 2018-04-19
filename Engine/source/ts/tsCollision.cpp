@@ -989,9 +989,9 @@ PhysicsCollision* TSShape::_buildColShapes( bool useVisibleMesh, const Point3F &
          MatrixF localXfm;
          getNodeWorldTransform( object.nodeIndex, &localXfm );
 
-         colShape->addTriangleMesh( polyList.mVertexList.address(),
+         colShape->addTriangleMesh( polyList.mVertexList.data(),
             polyList.mVertexList.size(),
-            polyList.mIndexList.address(),
+            polyList.mIndexList.data(),
             polyList.mIndexList.size() / 3,
             localXfm );
 
@@ -1122,9 +1122,9 @@ PhysicsCollision* TSShape::_buildColShapes( bool useVisibleMesh, const Point3F &
             ConcretePolyList polyList;
             polyList.setTransform( &MatrixF::Identity, scale );
             mesh->buildPolyList( 0, &polyList, surfaceKey, NULL );
-            colShape->addTriangleMesh( polyList.mVertexList.address(), 
+            colShape->addTriangleMesh( polyList.mVertexList.data(), 
                                        polyList.mVertexList.size(),
-                                       polyList.mIndexList.address(),
+                                       polyList.mIndexList.data(),
                                        polyList.mIndexList.size() / 3,
                                        localXfm );
          }
@@ -1145,7 +1145,7 @@ PhysicsCollision* TSShape::_buildColShapes( bool useVisibleMesh, const Point3F &
 
             polyList.setTransform( &MatrixF::Identity, scale );
             mesh->buildPolyList( 0, &polyList, surfaceKey, NULL );
-            colShape->addConvex( polyList.getVertexList().address(), 
+            colShape->addConvex( polyList.getVertexList().data(), 
                                  polyList.getVertexList().size(),
                                  meshMat );
          }

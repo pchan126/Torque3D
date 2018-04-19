@@ -50,10 +50,10 @@ TerrainFile::TerrainFile()
      mNeedsResaving( false )
 {
    mLayerMap.setSize( mSize * mSize );
-   dMemset( mLayerMap.address(), 0, mLayerMap.memSize() );
+   dMemset( mLayerMap.data(), 0, mLayerMap.memSize() );
 
    mHeightMap.setSize( mSize * mSize );
-   dMemset( mHeightMap.address(), 0, mHeightMap.memSize() );
+   dMemset( mHeightMap.data(), 0, mHeightMap.memSize() );
 }
 
 TerrainFile::~TerrainFile()
@@ -110,7 +110,7 @@ void TerrainFile::_buildGridMap()
    mGridMap.compact();
 
    // Assign memory from the pool to each grid level.
-   TerrainSquare *sq = mGridMapPool.address();
+   TerrainSquare *sq = mGridMapPool.data();
    for ( S32 i = mGridLevels; i >= 0; i-- )
    {
       mGridMap[i] = sq;
@@ -582,7 +582,7 @@ void TerrainFile::setSize( U32 newSize, bool clear )
    {
       mLayerMap.setSize( newSize * newSize );
       mLayerMap.compact();
-      dMemset( mLayerMap.address(), 0, mLayerMap.memSize() );
+      dMemset( mLayerMap.data(), 0, mLayerMap.memSize() );
 
       // Initialize the elevation to something above
       // zero so that we have room to excavate by default.
@@ -626,8 +626,8 @@ void TerrainFile::smooth( F32 factor, U32 steps, bool updateCollision )
    const F32 matrixC = matrixE * 0.5f;
 
    // Now loop for our interations.
-   F32 *src = h1.address();
-   F32 *dst = h2.address();
+   F32 *src = h1.data();
+   F32 *dst = h2.data();
    for ( U32 s=0; s < steps; s++ )
    {
       for ( S32 y=0; y < mSize; y++ )
@@ -674,7 +674,7 @@ void TerrainFile::smooth( F32 factor, U32 steps, bool updateCollision )
 void TerrainFile::setHeightMap( const Vector<U16> &heightmap, bool updateCollision )
 {
    AssertFatal( mHeightMap.size() == heightmap.size(), "TerrainFile::setHeightMap - Incorrect heightmap size!" );
-   dMemcpy( mHeightMap.address(), heightmap.address(), mHeightMap.size() ); 
+   dMemcpy( mHeightMap.data(), heightmap.data(), mHeightMap.size() ); 
 
    if ( updateCollision )
       _buildGridMap();
@@ -698,7 +698,7 @@ void TerrainFile::import(  const GBitmap &heightMap,
    }
 
    // Convert the height map to heights.
-   U16 *oBits = mHeightMap.address();
+   U16 *oBits = mHeightMap.data();
    if ( heightMap.getFormat() == GFXFormatR5G6B5 )
    {
       const F32 toFixedPoint = ( 1.0f / (F32)U16_MAX ) * floatToFixed( heightScale );

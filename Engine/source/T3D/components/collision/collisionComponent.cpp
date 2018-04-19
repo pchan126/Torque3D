@@ -501,9 +501,9 @@ PhysicsCollision* CollisionComponent::buildColShapes()
          MatrixF localXfm;
          shape->getNodeWorldTransform(object.nodeIndex, &localXfm);
 
-         colShape->addTriangleMesh(polyList.mVertexList.address(),
+         colShape->addTriangleMesh(polyList.mVertexList.data(),
             polyList.mVertexList.size(),
-            polyList.mIndexList.address(),
+            polyList.mIndexList.data(),
             polyList.mIndexList.size() / 3,
             localXfm);
       }
@@ -569,7 +569,7 @@ PhysicsCollision* CollisionComponent::buildColShapes()
 
             polyList.setTransform(&MatrixF::Identity, mOwner->getScale());
             mesh->buildPolyList(0, &polyList, surfaceKey, NULL);
-            colShape->addConvex(polyList.getVertexList().address(),
+            colShape->addConvex(polyList.getVertexList().data(),
                polyList.getVertexList().size(),
                meshMat);
          } // objects
